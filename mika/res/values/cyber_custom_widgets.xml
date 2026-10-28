@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- In-launcher custom widgets registered by CustomWidgetManager.
+     Both CozyBoard and MikaBoard are registered, preserving the original theme and adding Mika. -->
+<resources>
+    <string-array name="cyber_custom_widget_providers" translatable="false">
+        <item>com.techvrs.cyberhome.cyber.board.CozyBoardWidget</item>
+        <item>com.techvrs.cyberhome.mika.board.MikaBoardWidget</item>
+    </string-array>
+</resources>

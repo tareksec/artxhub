@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Mika Theme additions. Applied from the root build.gradle.
+
+android {
+    buildTypes.configureEach { buildType ->
+        def sourceSet = sourceSets.maybeCreate(buildType.name)
+        sourceSet.res.srcDirs += 'mika/res'
+        sourceSet.java.srcDirs += 'mika/src'
+    }
+
+    // Merge Mika components via the 'lawn' product flavor sourceSet (present on all variants)
+    sourceSets.maybeCreate('lawn').with {
+        manifest.srcFile 'mika/AndroidManifest.xml'
+    }
+}

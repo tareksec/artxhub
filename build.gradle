@@ -352,6 +352,9 @@ android {
 
 // CyberHome: rebrand overlay (resources that override upstream branding)
 apply from: 'cyber/cyber.gradle'
+if (file('mika/mika.gradle').exists()) {
+    apply from: 'mika/mika.gradle'
+}
 
 composeCompiler {
     stabilityConfigurationFiles.addAll(
