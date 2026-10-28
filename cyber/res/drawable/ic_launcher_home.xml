@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Overrides upstream res/drawable/ic_launcher_home.xml (app icon) with the CyberHome icon. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/cyber_ic_launcher_background" />
+    <foreground android:drawable="@drawable/cyber_ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/cyber_ic_launcher_monochrome" />
+</adaptive-icon>

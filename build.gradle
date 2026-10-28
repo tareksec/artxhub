@@ -1,3 +1,4 @@
+// Modified by CyberHome (app id, app name, APK name, cyber overlay). See docs/UPSTREAM_CHANGES.md.
 import app.cash.licensee.SpdxId
 import com.android.build.gradle.api.AndroidBasePlugin
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
@@ -173,7 +174,7 @@ android {
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
             def channel = variant.productFlavors.last().name
-            outputFileName = "Lawnchair.${variant.versionName}.$channel.${variant.buildType.name}.apk"
+            outputFileName = "CyberHome.${variant.versionName}.$channel.${variant.buildType.name}.apk"
         }
     }
 
@@ -244,11 +245,11 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
-            resValue("string", "derived_app_name", "Lawnchair (Debug)")
+            resValue("string", "derived_app_name", "CyberHome (Debug)")
         }
 
         release {
-            resValue("string", "derived_app_name", "Lawnchair")
+            resValue("string", "derived_app_name", "CyberHome")
             minifyEnabled true
             shrinkResources true
             proguardFiles proguardFilesFromAosp + "proguard.pro"
@@ -278,17 +279,17 @@ android {
         }
 
         github {
-            applicationId 'app.lawnchair'
+            applicationId 'com.techvrs.cyberhome'
             dimension "channel"
         }
 
         nightly {
-            applicationId 'app.lawnchair.nightly'
+            applicationId 'com.techvrs.cyberhome.nightly'
             dimension "channel"
         }
 
         play {
-            applicationId "app.lawnchair.play"
+            applicationId "com.techvrs.cyberhome.play"
             dimension "channel"
             isDefault true
         }
@@ -348,6 +349,9 @@ android {
         }
     }
 }
+
+// CyberHome: rebrand overlay (resources that override upstream branding)
+apply from: 'cyber/cyber.gradle'
 
 composeCompiler {
     stabilityConfigurationFiles.addAll(
