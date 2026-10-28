@@ -15,4 +15,7 @@
     <dimen name="cyber_text_title">18sp</dimen>
     <dimen name="cyber_text_body">14sp</dimen>
     <dimen name="cyber_text_label">12sp</dimen>
+
+    <!-- All Apps bottom illustration spacing -->
+    <dimen name="cyber_all_apps_bottom_padding">140dp</dimen>
 </resources>

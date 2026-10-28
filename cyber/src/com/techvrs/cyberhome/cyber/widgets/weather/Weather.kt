@@ -166,25 +166,44 @@ class WeatherWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         private const val NOW = "cyber_weather_now"
         private val network = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
+        private fun getWorkManager(context: Context): WorkManager? = runCatching {
+            try {
+                WorkManager.getInstance(context)
+            } catch (_: IllegalStateException) {
+                val config = androidx.work.Configuration.Builder().build()
+                WorkManager.initialize(context.applicationContext, config)
+                WorkManager.getInstance(context)
+            }
+        }.getOrNull()
+
         /** Every 60 minutes (WorkManager batches it with other work; no wakeups of its own). */
         fun schedule(context: Context) {
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                PERIODIC,
-                ExistingPeriodicWorkPolicy.KEEP,
-                PeriodicWorkRequestBuilder<WeatherWorker>(60, TimeUnit.MINUTES).setConstraints(network).build(),
-            )
+            runCatching {
+                val wm = getWorkManager(context) ?: return
+                wm.enqueueUniquePeriodicWork(
+                    PERIODIC,
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    PeriodicWorkRequestBuilder<WeatherWorker>(60, TimeUnit.MINUTES).setConstraints(network).build(),
+                )
+            }
         }
 
         fun refreshNow(context: Context) {
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                NOW,
-                ExistingWorkPolicy.REPLACE,
-                OneTimeWorkRequestBuilder<WeatherWorker>().setConstraints(network).build(),
-            )
+            runCatching {
+                val wm = getWorkManager(context) ?: return
+                wm.enqueueUniqueWork(
+                    NOW,
+                    ExistingWorkPolicy.REPLACE,
+                    OneTimeWorkRequestBuilder<WeatherWorker>().setConstraints(network).build(),
+                )
+            }
         }
 
         fun cancel(context: Context) {
-            WorkManager.getInstance(context).cancelUniqueWork(PERIODIC)
+            runCatching {
+                val wm = getWorkManager(context) ?: return
+                wm.cancelUniqueWork(PERIODIC)
+            }
         }
     }
 }

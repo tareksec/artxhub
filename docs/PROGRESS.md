@@ -316,8 +316,30 @@ java.lang.IllegalArgumentException: Only VectorDrawables and rasterized asset ty
 ### Still Open
 - Owner's release keystore (`keytool` generation per `docs/RELEASE_NOTES.md`).
 - Baseline profile generation.
-- All Apps bottom illustration asset (petals + character footer overlay) implementation upon user confirmation.
 - Owner approval before git commit.
+
+## All Apps Bottom Illustration & WorkManager Guard (2026-10-28)
+
+Tested and verified on Nokia G10 (Android 13) on both Debug and Release APKs:
+
+### 1. All Apps Drawer Bottom Character Illustration
+- **Feature:** Added aesthetic bottom illustration (`cyber_all_apps_deco.png`) featuring anime character with blue stars and magical ribbons at the bottom of the All Apps drawer.
+- **Visual Design:** Applied a smooth mathematical alpha fade at the top of the image so it seamlessly dissolves into the All Apps background with zero hard edges.
+- **Layout:** Positioned via `android:layout_alignParentBottom="true"` inside `all_apps_content.xml` behind `AllAppsRecyclerView` so that app icons scroll smoothly over the artwork.
+- **Padding:** Added `cyber_all_apps_bottom_padding` (`140dp`) in `ActivityAllAppsContainerView.java:applyAdapterSideAndBottomPaddings` so the last row of apps stops cleanly above the art when scrolled to the end of the drawer.
+
+### 2. WorkManager Guard in Release Build
+- **Crash Found in Release:** `java.lang.IllegalStateException: WorkManager is not initialized properly. You have explicitly disabled WorkManagerInitializer in your manifest...` in `WeatherWorker.schedule()`.
+- **Fix:** Added `getWorkManager(context)` in `Weather.kt` that catches `IllegalStateException` and initializes `WorkManager` on-demand with `WorkManager.initialize(context.applicationContext, config)` wrapped safely with `runCatching`.
+- **Verification:** Both Debug and Release builds now open All Apps smoothly without any crashes.
+
+### 3. Verification & Screenshots
+- Verified on Nokia G10 (`Rogue_00WW`), Android 13.
+- Screenshots saved on Desktop:
+  - `cyberhome_release_allapps_open.png`: All Apps initial open with character at bottom
+  - `allapps_scrolled.png`: Scrolling app list seamlessly over character art
+  - `allapps_bottom_end.png`: Scrolled to the bottom with apps framed above the art
+
 
 ## Board & UI Improvements Pass (2026-10-28)
 

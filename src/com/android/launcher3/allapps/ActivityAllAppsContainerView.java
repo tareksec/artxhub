@@ -1305,7 +1305,9 @@ public class ActivityAllAppsContainerView<T extends Context & ActivityContext>
     }
 
     private void applyAdapterSideAndBottomPaddings(DeviceProfile grid) {
-        int bottomPadding = Math.max(mInsets.bottom, mNavBarScrimHeight);
+        // Modified by CyberHome: Add extra bottom padding for All Apps character deco
+        int decoExtra = getContext().getResources().getDimensionPixelSize(R.dimen.cyber_all_apps_bottom_padding);
+        int bottomPadding = Math.max(mInsets.bottom, mNavBarScrimHeight) + decoExtra;
         mAH.forEach(adapterHolder -> {
             adapterHolder.mPadding.bottom = bottomPadding;
             adapterHolder.mPadding.left = adapterHolder.mPadding.right = grid.allAppsPadding.left

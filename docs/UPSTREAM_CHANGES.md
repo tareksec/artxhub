@@ -22,6 +22,8 @@ Every file from Lawnchair (`15-dev`) that we edited. Keep each edit small and ma
 | `src/com/android/launcher3/widget/LauncherWidgetHolder.java` | `attachViewToHostAndGetAttachedView`: do not recycle in-launcher custom widgets through `AppWidgetHost`; preserve view tag on recycled views | Board |
 | `src/com/android/launcher3/Launcher.java` | `bindInflatedItems`: ensure view tag is restored on inflated widget views so `addInScreen` does not drop them | Board |
 | `src/com/android/launcher3/widget/LauncherAppWidgetHostView.java` | `updateAppWidget`: early return for in-launcher custom widgets so remote view updates do not overwrite local views | Board |
+| `src/com/android/launcher3/allapps/ActivityAllAppsContainerView.java` | `applyAdapterSideAndBottomPaddings`: add `cyber_all_apps_bottom_padding` to bottom padding for aesthetic character deco | All Apps |
+| `res/layout/all_apps_content.xml` | Added `@id/cyber_all_apps_bottom_deco` ImageView pinned to bottom of drawer behind app icons | All Apps |
 
 ## Overrides without editing upstream files
 

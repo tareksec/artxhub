@@ -259,7 +259,9 @@ class CozyBoardView(context: Context) : View(context) {
         )
         CozyBoard.addListener(onBoardChanged)
         MediaSessionTracker.start(context)
-        if (WeatherStore(context).city != null) WeatherWorker.schedule(context)
+        runCatching {
+            if (WeatherStore(context).city != null) WeatherWorker.schedule(context)
+        }
         onBoardChanged()
     }
 

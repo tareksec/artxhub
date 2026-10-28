@@ -21,6 +21,17 @@
         layout="@layout/all_apps_bottom_sheet_background"
         android:visibility="gone" />
 
+    <!-- Modified by CyberHome: All Apps drawer aesthetic bottom illustration -->
+    <ImageView
+        android:id="@+id/cyber_all_apps_bottom_deco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitEnd"
+        android:importantForAccessibility="no"
+        android:src="@drawable/cyber_all_apps_deco" />
+
     <include
         layout="@layout/search_results_rv_layout"
         android:visibility="gone" />
