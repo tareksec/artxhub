@@ -2,6 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="AppTheme" parent="@style/LauncherTheme">
         <item name="uiColorMode">0</item>
+        <!-- Modified by CyberHome: cream / plum starting window instead of a white flash (BUG-1). -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/cyber_bg</item>
 
         <item name="android:colorAccent">@color/accent_light</item>
         <item name="android:colorBackground">@color/background_device_default_light</item>

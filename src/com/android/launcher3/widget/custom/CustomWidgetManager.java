@@ -71,18 +71,23 @@ public class CustomWidgetManager implements PluginListener<CustomWidgetPlugin>, 
                 .addPluginListener(this, CustomWidgetPlugin.class, true);
 
         if (enableSmartspaceAsAWidget()) {
-            for (String s: context.getResources()
-                    .getStringArray(R.array.custom_widget_providers)) {
-                try {
-                    Class<?> cls = Class.forName(s);
-                    CustomWidgetPlugin plugin = (CustomWidgetPlugin)
-                            cls.getDeclaredConstructor(Context.class).newInstance(context);
-                    onPluginConnected(plugin, context);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                         | ClassCastException | NoSuchMethodException
-                         | InvocationTargetException e) {
-                    Log.e(TAG, "Exception found when trying to add custom widgets: " + e);
-                }
+            addBuiltInProviders(context, R.array.custom_widget_providers);
+        }
+        // Modified by CyberHome: always register our in-launcher widgets (Cozy Board).
+        addBuiltInProviders(context, R.array.cyber_custom_widget_providers);
+    }
+
+    private void addBuiltInProviders(Context context, int arrayRes) {
+        for (String s: context.getResources().getStringArray(arrayRes)) {
+            try {
+                Class<?> cls = Class.forName(s);
+                CustomWidgetPlugin plugin = (CustomWidgetPlugin)
+                        cls.getDeclaredConstructor(Context.class).newInstance(context);
+                onPluginConnected(plugin, context);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                     | ClassCastException | NoSuchMethodException
+                     | InvocationTargetException e) {
+                Log.e(TAG, "Exception found when trying to add custom widgets: " + e);
             }
         }
     }
@@ -150,6 +155,9 @@ public class CustomWidgetManager implements PluginListener<CustomWidgetPlugin>, 
     private CustomAppWidgetProviderInfo newInfo(CustomWidgetPlugin plugin, Parcel parcel) {
         CustomAppWidgetProviderInfo info = new CustomAppWidgetProviderInfo(parcel, false);
         info.provider = getWidgetProviderComponent(plugin);
+        // Modified by CyberHome: clear donor parcel initialLayout so AppWidgetHostView doesn't inflate it
+        info.initialLayout = 0;
+        info.initialKeyguardLayout = 0;
         plugin.updateWidgetInfo(info, mContext);
         return info;
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Default 2x1 cells. updatePeriodMillis=0: refreshed by CyberRuntime / WorkManager / user actions only. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/cyber_widget_water_desc"
+    android:initialLayout="@layout/cyber_widget_strip"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:minResizeWidth="80dp"
+    android:minResizeHeight="40dp"
+    android:resizeMode="horizontal"
+    android:targetCellWidth="2"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

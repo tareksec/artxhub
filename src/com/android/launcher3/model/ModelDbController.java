@@ -81,6 +81,7 @@ import com.android.launcher3.util.IntArray;
 import com.android.launcher3.util.MainThreadInitializedObject.SandboxContext;
 import com.android.launcher3.util.Partner;
 import com.android.launcher3.widget.LauncherWidgetHolder;
+import com.techvrs.cyberhome.cyber.board.CyberLayout;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -499,16 +500,21 @@ public class ModelDbController {
             LawnchairAppKt.getLawnchairApp(mContext).cleanUpDatabases();
         }
 
-        if (LauncherPrefs.get(mContext).get(getEmptyDbCreatedKey())) {
+        // Modified by CyberHome: "Apply look" / "Reset" requests the default layout in this load.
+        boolean cyberReset = CyberLayout.consumeResetRequest(mContext);
+        if (cyberReset || LauncherPrefs.get(mContext).get(getEmptyDbCreatedKey())) {
             Log.d(TAG, "loading default workspace");
 
             LauncherWidgetHolder widgetHolder = mOpenHelper.newLauncherWidgetHolder();
             try {
-                AutoInstallsLayout loader = createWorkspaceLoaderFromAppRestriction(widgetHolder);
-                if (loader == null) {
+                // Modified by CyberHome: our grid always uses its own layout, never a partner one.
+                boolean cyberGrid = CyberLayout.isCyberGrid(mContext);
+                AutoInstallsLayout loader = cyberGrid ? null
+                        : createWorkspaceLoaderFromAppRestriction(widgetHolder);
+                if (loader == null && !cyberGrid) {
                     loader = AutoInstallsLayout.get(mContext, widgetHolder, mOpenHelper);
                 }
-                if (loader == null) {
+                if (loader == null && !cyberGrid) {
                     final Partner partner = Partner.get(mContext.getPackageManager());
                     if (partner != null) {
                         int workspaceResId = partner.getXmlResId(RES_PARTNER_DEFAULT_LAYOUT);
@@ -536,6 +542,8 @@ public class ModelDbController {
                     mOpenHelper.loadFavorites(mOpenHelper.getWritableDatabase(),
                             getDefaultLayoutParser(widgetHolder));
                 }
+                // Modified by CyberHome: adds the Cozy Board on the first page of our grid.
+                if (cyberGrid) CyberLayout.onDefaultLayoutLoaded(mContext, this);
                 clearFlagEmptyDbCreated();
             } finally {
                 widgetHolder.destroy();

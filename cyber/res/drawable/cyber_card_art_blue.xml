@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Placeholder character-card art (blue): original soft pastel scene with a round chibi-style
+     silhouette (cat-ear hood), a moon circle and sparkles. Owners replace it with their own art
+     from the card editor. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="400dp"
+    android:viewportWidth="300"
+    android:viewportHeight="400">
+    <path android:fillColor="#FFDCE7FF" android:pathData="M0,0h300v400h-300z" />
+    <path android:fillColor="#FFC2D4FF" android:pathData="M150,140m-105,0a105,105 0,1 1,210 0a105,105 0,1 1,-210 0" />
+    <path android:fillColor="#FFFFFFFF" android:fillAlpha="0.85" android:pathData="M54,64l4,10l10,4l-10,4l-4,10l-4,-10l-10,-4l10,-4z" />
+    <path android:fillColor="#FFFFFFFF" android:fillAlpha="0.85" android:pathData="M246,44l3,7l7,3l-7,3l-3,7l-3,-7l-7,-3l7,-3z" />
+    <path android:fillColor="#FFFFFFFF" android:fillAlpha="0.7" android:pathData="M258,206l2.5,6l6,2.5l-6,2.5l-2.5,6l-2.5,-6l-6,-2.5l6,-2.5z" />
+    <path android:fillColor="#FF8EA9F0" android:pathData="M58,400C58,312 96,250 150,250C204,250 242,312 242,400Z" />
+    <path android:fillColor="#FF8EA9F0" android:pathData="M88,92L96,40L128,74Z M212,92L204,40L172,74Z" />
+    <path android:fillColor="#FF8EA9F0" android:pathData="M150,150m-66,0a66,66 0,1 1,132 0a66,66 0,1 1,-132 0" />
+    <path android:fillColor="#FFFFFFFF" android:fillAlpha="0.9" android:pathData="M150,162m-48,0a48,44 0,1 1,96 0a48,44 0,1 1,-96 0" />
+    <path android:fillColor="#FF6F8DE8" android:pathData="M128,160m-6,0a6,7 0,1 1,12 0a6,7 0,1 1,-12 0 M172,160m-6,0a6,7 0,1 1,12 0a6,7 0,1 1,-12 0" />
+    <path android:fillColor="#FFC2D4FF" android:pathData="M112,178m-9,0a9,5 0,1 1,18 0a9,5 0,1 1,-18 0 M188,178m-9,0a9,5 0,1 1,18 0a9,5 0,1 1,-18 0" />
+    <path android:strokeColor="#FF6F8DE8" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M143,180q7,6 14,0" />
+    <path android:fillColor="#FFFFFFFF" android:fillAlpha="0.55" android:pathData="M150,300m-22,0a22,22 0,1 1,44 0a22,22 0,1 1,-44 0" />
+</vector>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
-<!-- CyberHome design tokens: text styles. Usable from layouts and RemoteViews widgets. -->
+<!-- CyberHome design tokens: text styles (Nunito). Usable from layouts and RemoteViews widgets.
+     Widgets set text colors from code (see CyberThemeMode); the colors here are for our screens. -->
 <resources>
-    <!-- Huge block digits (clock) -->
+    <!-- Big rounded clock digits -->
     <style name="Cyber.TextAppearance.Clock" parent="">
         <item name="android:fontFamily">@font/cyber_font_display</item>
         <item name="android:textStyle">bold</item>
@@ -16,7 +17,7 @@
     <style name="Cyber.TextAppearance.Number" parent="">
         <item name="android:fontFamily">@font/cyber_font_display</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textFontWeight">700</item>
+        <item name="android:textFontWeight">800</item>
         <item name="android:textSize">@dimen/cyber_text_number</item>
         <item name="android:textColor">@color/cyber_text</item>
         <item name="android:includeFontPadding">false</item>
@@ -25,24 +26,24 @@
     <style name="Cyber.TextAppearance.Title" parent="">
         <item name="android:fontFamily">@font/cyber_font_display</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textFontWeight">700</item>
+        <item name="android:textFontWeight">800</item>
         <item name="android:textSize">@dimen/cyber_text_title</item>
         <item name="android:textColor">@color/cyber_text</item>
-        <item name="android:letterSpacing">0.05</item>
     </style>
 
     <style name="Cyber.TextAppearance.Body" parent="">
-        <item name="android:fontFamily">@font/cyber_share_tech_mono</item>
+        <item name="android:fontFamily">@font/cyber_font_display</item>
+        <item name="android:textFontWeight">400</item>
         <item name="android:textSize">@dimen/cyber_text_body</item>
         <item name="android:textColor">@color/cyber_text</item>
     </style>
 
-    <!-- Small uppercase captions with letter-spacing -->
+    <!-- Small friendly captions (sentence case, no tracking) -->
     <style name="Cyber.TextAppearance.Label" parent="">
-        <item name="android:fontFamily">@font/cyber_share_tech_mono</item>
+        <item name="android:fontFamily">@font/cyber_font_display</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textFontWeight">700</item>
         <item name="android:textSize">@dimen/cyber_text_label</item>
         <item name="android:textColor">@color/cyber_text_dim</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:letterSpacing">0.15</item>
     </style>
 </resources>

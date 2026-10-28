@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- In-launcher widgets registered by CustomWidgetManager (Modified by CyberHome hook). -->
+<resources>
+    <string-array name="cyber_custom_widget_providers" translatable="false">
+        <item>com.techvrs.cyberhome.cyber.board.CozyBoardWidget</item>
+    </string-array>
+</resources>

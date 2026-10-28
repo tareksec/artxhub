@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- W1/W2 Clock: HH over MM in big rounded digits on a soft card, a small pill between them,
+     date line below. Only RemoteViews-safe views. TextClock ticks by itself, so the provider
+     never needs periodic updates. Digits auto-size to the cell. Colors are set from code. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_clock_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Card background: white rounded shape tinted with cyber_surface -->
+    <ImageView
+        android:id="@+id/cyber_clock_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/cyber_widget_round_bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/cyber_widget_clock_padding">
+
+        <TextClock
+            android:id="@+id/cyber_clock_hour"
+            style="@style/Cyber.TextAppearance.Clock"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:autoSizeMaxTextSize="@dimen/cyber_text_clock_max"
+            android:autoSizeMinTextSize="@dimen/cyber_text_clock_min"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:format12Hour="hh"
+            android:format24Hour="HH"
+            android:gravity="center"
+            android:maxLines="1" />
+
+        <!-- Small soft pill between hour and minutes -->
+        <ImageView
+            android:id="@+id/cyber_clock_divider"
+            android:layout_width="22dp"
+            android:layout_height="5dp"
+            android:layout_marginVertical="@dimen/cyber_widget_clock_divider_margin"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/cyber_widget_pill" />
+
+        <TextClock
+            android:id="@+id/cyber_clock_minute"
+            style="@style/Cyber.TextAppearance.Clock"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:autoSizeMaxTextSize="@dimen/cyber_text_clock_max"
+            android:autoSizeMinTextSize="@dimen/cyber_text_clock_min"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:format12Hour="mm"
+            android:format24Hour="mm"
+            android:gravity="center"
+            android:maxLines="1" />
+
+        <!-- W2 date line. The provider replaces this pattern with a locale-aware one. -->
+        <TextClock
+            android:id="@+id/cyber_clock_date"
+            style="@style/Cyber.TextAppearance.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cyber_widget_clock_divider_margin"
+            android:format12Hour="MMM dd · EEE"
+            android:format24Hour="MMM dd · EEE"
+            android:maxLines="1"
+            android:textSize="13sp" />
+    </LinearLayout>
+</FrameLayout>

@@ -4,18 +4,79 @@
 // cyber/res and cyber/src are added to every build type source set. Build type source sets
 // have the highest priority in resource merging, so resources here override upstream ones
 // with the same name (app icon, user-visible "Lawnchair" strings) without editing upstream files.
-// cyber/debug holds debug-only code and manifest entries (design preview screen).
+// cyber/AndroidManifest.xml declares our components (widgets) for every build type.
+// cyber/debug holds debug-only code and manifest entries (design preview screen); a source set
+// has only one manifest, so it uses the variant source set of the debug build we ship.
 
 android {
+    // Our own version (shown in Android's app info and the APK name). versionCode stays upstream's,
+    // so it keeps growing with upstream merges and updates install over older test builds.
+    defaultConfig.versionName = '0.2.0'
+
     buildTypes.configureEach { buildType ->
         def sourceSet = sourceSets.maybeCreate(buildType.name)
         sourceSet.res.srcDirs += 'cyber/res'
         sourceSet.java.srcDirs += 'cyber/src'
+        sourceSet.manifest.srcFile 'cyber/AndroidManifest.xml'
     }
-    sourceSets.debug {
+    sourceSets.maybeCreate('lawnWithQuickstepGithubDebug').with {
         java.srcDirs += 'cyber/debug/src'
         manifest.srcFile 'cyber/debug/AndroidManifest.xml'
     }
+
+    // Size (bug-fix/04, owner's choice): English only. Upstream's ~80 translations made
+    // resources.arsc 5.4 MB. Translation files stay in the tree, they are just not packaged.
+    androidResources {
+        localeFilters += ['en']
+    }
+    // Real phones are ARM; x86 libraries are only for PC emulators (the debug build keeps them).
+    buildTypes.named('release') {
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+    }
+}
+
+/**
+ * Copies cyber/templates/*.xml into a generated res/xml/ folder of one variant, replacing
+ * @APP_ID@ with that variant's applicationId. Needed because default workspace layouts name
+ * widget providers by package, and the debug build has a different package (.debug suffix).
+ */
+abstract class CyberLayoutTemplatesTask extends DefaultTask {
+    @InputDirectory
+    abstract DirectoryProperty getTemplateDir()
+
+    @Input
+    abstract Property<String> getApplicationId()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @TaskAction
+    void generate() {
+        def xmlDir = new File(outputDir.get().asFile, 'xml')
+        xmlDir.mkdirs()
+        templateDir.get().asFile.eachFileMatch(~/.*\.xml/) { template ->
+            new File(xmlDir, template.name).setText(
+                template.getText('UTF-8').replace('@APP_ID@', applicationId.get()), 'UTF-8')
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def generate = tasks.register("cyberGenerate${variant.name.capitalize()}LayoutTemplates", CyberLayoutTemplatesTask) {
+            templateDir = layout.projectDirectory.dir('cyber/templates')
+            applicationId = variant.applicationId
+            outputDir = layout.buildDirectory.dir("generated/cyber/${variant.name}/res")
+        }
+        variant.sources.res.addGeneratedSourceDirectory(generate, { CyberLayoutTemplatesTask t -> t.outputDir })
+    }
+}
+
+dependencies {
+    // Weather refresh and water reminders (periodic, battery-friendly background work)
+    implementation 'androidx.work:work-runtime-ktx:2.10.1'
 }
 
 /**
@@ -74,56 +135,52 @@ abstract class CyberRebrandStringsTask extends DefaultTask {
 }
 
 /**
- * Generates the bundled dark dot-grid wallpapers into cyber/res/drawable-nodpi.
- * Pure code, no external art. Re-run after changing the parameters below:
- *   ./gradlew cyberWallpapers
+ * Renders the widget picker preview image of the clock (android:previewImage, used before
+ * Android 12; newer versions render android:previewLayout instead) into cyber/res/drawable-nodpi:
+ *   ./gradlew cyberWidgetPreviews
  */
-abstract class CyberWallpapersTask extends DefaultTask {
-    // name -> [width, height, density]; density turns the dp tokens into pixels.
-    static final Map<String, List<Number>> SIZES = [
-        'cyber_wallpaper_1440x3120': [1440, 3120, 3.5f],
-        'cyber_wallpaper_1080x2400': [1080, 2400, 2.625f],
-    ]
-    static final int BG = 0xFF0B0C0F            // cyber_bg
-    static final int DOT = 0x0FFFFFFF           // cyber_bg_dot (~6% white)
-    static final float DOT_SPACING_DP = 5f      // cyber_dot_spacing
-    static final float DOT_RADIUS_DP = 0.75f    // cyber_dot_radius
+abstract class CyberWidgetPreviewsTask extends DefaultTask {
+    @InputDirectory
+    abstract DirectoryProperty getFontDir()
 
     @OutputDirectory
     abstract DirectoryProperty getOutputDir()
 
     @TaskAction
     void generate() {
-        def outDir = outputDir.get().asFile
-        SIZES.each { name, spec ->
-            int w = spec[0] as int, h = spec[1] as int
-            float density = spec[2] as float
-            float spacing = Math.round(DOT_SPACING_DP * density)
-            float r = DOT_RADIUS_DP * density
-            def img = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_RGB)
-            def g = img.createGraphics()
-            g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
-            g.color = new java.awt.Color(BG, true)
-            g.fillRect(0, 0, w, h)
-            g.color = new java.awt.Color(DOT, true)
-            // Center the grid so the margins are equal on both sides.
-            float x0 = ((w % spacing) + spacing) / 2f
-            float y0 = ((h % spacing) + spacing) / 2f
-            for (float y = y0; y < h; y += spacing) {
-                for (float x = x0; x < w; x += spacing) {
-                    g.fill(new java.awt.geom.Ellipse2D.Double(x - r, y - r, 2 * r, 2 * r))
-                }
-            }
-            g.dispose()
-            javax.imageio.ImageIO.write(img, 'png', new File(outDir, "${name}.png"))
+        def fonts = fontDir.get().asFile
+        def black = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new File(fonts, 'cyber_nunito_black.ttf'))
+        def bold = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new File(fonts, 'cyber_nunito_bold.ttf'))
+        int size = 360
+        def img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB)
+        def g = img.createGraphics()
+        g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g.color = new java.awt.Color(0xFFFFFFFF as int, true)               // cyber_surface (light)
+        g.fill(new java.awt.geom.RoundRectangle2D.Double(0, 0, size, size, 64, 64))
+
+        def center = { String text, java.awt.Font font, int baseline, int argb ->
+            g.font = font
+            g.color = new java.awt.Color(argb, true)
+            int w = g.fontMetrics.stringWidth(text)
+            g.drawString(text, ((size - w) / 2) as int, baseline)
         }
-        logger.lifecycle("cyberWallpapers: wrote ${SIZES.keySet()}")
+        def digits = black.deriveFont(128f)
+        center('06', digits, 150, 0xFF2B2A33 as int)                     // cyber_text
+        g.color = new java.awt.Color(0xFFF28AAE as int, true)            // cyber_soft_pink
+        g.fill(new java.awt.geom.RoundRectangle2D.Double(size / 2 - 22, 170, 44, 9, 9, 9))
+        center('00', digits, 300, 0xFFD9578A as int)                     // cyber_accent_pink
+        center('Oct 09 · Wed', bold.deriveFont(24f), 338, 0xFF8A8494 as int) // cyber_text_dim
+        g.dispose()
+        javax.imageio.ImageIO.write(img, 'png', new File(outputDir.get().asFile, 'cyber_widget_clock_preview.png'))
+        logger.lifecycle('cyberWidgetPreviews: wrote cyber_widget_clock_preview.png')
     }
 }
 
-tasks.register('cyberWallpapers', CyberWallpapersTask) {
+tasks.register('cyberWidgetPreviews', CyberWidgetPreviewsTask) {
     group = 'cyber'
-    description = 'Generates the dot-grid wallpapers in cyber/res/drawable-nodpi'
+    description = 'Renders widget picker preview images into cyber/res/drawable-nodpi'
+    fontDir = layout.projectDirectory.dir('cyber/res/font')
     outputDir = layout.projectDirectory.dir('cyber/res/drawable-nodpi')
 }
 

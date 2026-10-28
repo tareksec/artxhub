@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Widget picker preview of the Cozy Board. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape android:shape="rectangle"><solid android:color="@color/cyber_tint_pink" /><corners android:radius="18dp" /></shape></item>
+    <item android:gravity="bottom|center_horizontal"><bitmap android:src="@drawable/cyber_char_sakura" android:gravity="bottom|center_horizontal" /></item>
+</layer-list>

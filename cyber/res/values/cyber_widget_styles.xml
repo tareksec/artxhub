@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <!-- Window theme for our Compose screens (onboarding, settings, widget editors) -->
+    <style name="Cyber.Theme.Screen" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/cyber_bg</item>
+        <item name="android:colorAccent">@color/cyber_accent_pink</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <!-- One segment of the battery bar; color is set from code with setColorFilter. -->
+    <style name="Cyber.Widget.BatterySegment" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">@dimen/cyber_widget_battery_segment_gap</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:src">@drawable/cyber_widget_segment</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <!-- Round icon buttons inside widgets (music, tiles) -->
+    <style name="Cyber.Widget.IconButton" parent="">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:padding">6dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/cyber_widget_button_bg</item>
+    </style>
+</resources>

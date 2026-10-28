@@ -51,7 +51,8 @@ class PreferenceManager private constructor(private val context: Context) :
     val addIconToHome = BoolPref("pref_add_icon_to_home", true)
     val hotseatColumns = IntPref("pref_hotseatColumns", 4, reloadGrid)
     val workspaceColumns = IntPref("pref_workspaceColumns", 4)
-    val workspaceRows = IntPref("pref_workspaceRows", 5)
+    // Modified by CyberHome: 8 rows by default (was 5) -> cyber_4_by_8 grid + CyberHome layout
+    val workspaceRows = IntPref("pref_workspaceRows", 8)
     val workspaceIncreaseMaxGridSize = BoolPref("pref_workspace_increase_max_grid_size", false)
     val folderRows = IdpIntPref("pref_folderRows", { numFolderRows[INDEX_DEFAULT] }, reloadGrid)
 
@@ -59,8 +60,7 @@ class PreferenceManager private constructor(private val context: Context) :
     val coloredBackgroundLightness = FloatPref("pref_coloredBackgroundLightness", 0.9F, recreate)
     val feedProvider = StringPref("pref_feedProvider", "")
     val ignoreFeedWhitelist = BoolPref("pref_ignoreFeedWhitelist", false)
-    // Modified by CyberHome: dark theme by default (was "system")
-    val launcherTheme = StringPref("pref_launcherTheme", "dark")
+    val launcherTheme = StringPref("pref_launcherTheme", "system")
     val overrideWindowCornerRadius = BoolPref("pref_overrideWindowCornerRadius", false, recreate)
     val windowCornerRadius = IntPref("pref_windowCornerRadius", 80, recreate)
     val autoLaunchRoot = BoolPref("pref_autoLaunchRoot", false)
@@ -96,7 +96,8 @@ class PreferenceManager private constructor(private val context: Context) :
     val searchResultAllFiles = BoolPref("pref_searchResultAllFiles", false, recreate)
     val searchResultAudio = BoolPref("pref_searchResultAudio", false, recreate)
     val searchResultVisualMedia = BoolPref("pref_searchResultVisualMedia", false, recreate)
-    val searchResultStartPageSuggestion = BoolPref("pref_searchResultStartPageSuggestion", true, recreate)
+    // Modified by CyberHome: no web search suggestions by default (privacy; was true)
+    val searchResultStartPageSuggestion = BoolPref("pref_searchResultStartPageSuggestion", false, recreate)
     val searchResultSettingsEntry = BoolPref("pref_searchResultSettingsEntry", false, recreate)
     val searchResulRecentSuggestion = BoolPref("pref_searchResultRecentSuggestion", false, recreate)
 

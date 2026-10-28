@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- W7 Character card: art + rounded pastel card are one bitmap; labels stay live text.
+     Only RemoteViews-safe classes (no plain View spacers). Colors are set from code. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/cyber_widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY" />
+
+    <!-- Tag pill: a tinted pill image behind the title -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="@dimen/cyber_widget_inner_padding">
+
+        <ImageView
+            android:id="@+id/cyber_card_title_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/cyber_widget_pill" />
+
+        <TextView
+            android:id="@+id/cyber_card_title"
+            style="@style/Cyber.TextAppearance.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingHorizontal="9dp"
+            android:paddingVertical="3dp" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/cyber_card_edit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="6dp"
+        android:background="@drawable/cyber_widget_button_bg"
+        android:contentDescription="@string/cyber_widget_edit"
+        android:padding="7dp"
+        android:src="@drawable/cyber_ic_edit" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:padding="@dimen/cyber_widget_inner_padding">
+
+        <TextView
+            android:id="@+id/cyber_card_number"
+            style="@style/Cyber.TextAppearance.Number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/cyber_card_caption"
+            style="@style/Cyber.TextAppearance.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1" />
+    </LinearLayout>
+</FrameLayout>

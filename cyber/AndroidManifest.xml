@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- CyberHome components, merged into every build type.
+     No new permissions: INTERNET (weather), SET_WALLPAPER, POST_NOTIFICATIONS and
+     BIND_APPWIDGET are already declared by the launcher; see docs/PERMISSIONS.md. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+
+        <!-- Starts runtime receivers (date, battery, media) in the launcher process -->
+        <provider
+            android:name="com.techvrs.cyberhome.cyber.CyberInitProvider"
+            android:authorities="${applicationId}.cyber.init"
+            android:exported="false" />
+
+        <!-- Screens -->
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:label="@string/cyber_onboarding_title"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.CyberSettingsActivity"
+            android:exported="false"
+            android:label="@string/cyber_settings_title"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.AboutActivity"
+            android:exported="false"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.WeatherCityActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.cyber.widget"
+            android:theme="@style/Cyber.Theme.Screen"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.CardEditActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.cyber.widget"
+            android:theme="@style/Cyber.Theme.Screen"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.DayCounterActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.cyber.widget"
+            android:theme="@style/Cyber.Theme.Screen"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.WaterSettingsActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.cyber.widget"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.MusicAccessActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity="${applicationId}.cyber.widget"
+            android:theme="@style/Cyber.Theme.Screen" />
+
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.WallpaperActivity"
+            android:exported="false"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.BoardAppsActivity"
+            android:exported="false"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.BoardEditActivity"
+            android:exported="false"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.settings.PackActivity"
+            android:exported="false"
+            android:taskAffinity="${applicationId}.cyber"
+            android:theme="@style/Cyber.Theme.Screen" />
+
+        <!-- Widgets -->        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.clock.BlockClockWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_clock_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- Re-apply the locale-aware date pattern when the language changes -->
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_clock_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.calendar.MonthCalendarWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_calendar_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_calendar_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.battery.BatteryStripWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_battery_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_battery_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.weather.WeatherWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_weather_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_weather_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.card.PhoneCardWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_card_blue_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_card_blue_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.card.CharacterCardWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_card_pink_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_card_pink_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.card.TealCardWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_card_teal_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_card_teal_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.counter.DayCounterWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_counter_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_counter_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.water.WaterReminderWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_water_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_water_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.music.MusicStripWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_music_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_music_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.dial.DialButtonWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_dial_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_dial_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.tile.SettingsTileWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_tile_settings_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_tile_info" />
+        </receiver>
+        <receiver
+            android:name="com.techvrs.cyberhome.cyber.widgets.tile.MessagesTileWidgetProvider"
+            android:exported="false"
+            android:label="@string/cyber_widget_tile_messages_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/cyber_widget_tile_info" />
+        </receiver>
+    </application>
+</manifest>

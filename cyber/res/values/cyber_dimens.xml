@@ -2,24 +2,17 @@
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- CyberHome design tokens: sizes (PROJECT_SPEC.md section 2). -->
 <resources>
-    <!-- Background dot grid -->
-    <dimen name="cyber_dot_spacing">5dp</dimen>
-    <dimen name="cyber_dot_radius">0.75dp</dimen>
-
-    <!-- Tiles -->
+    <!-- Tiles: soft rounded cards -->
     <dimen name="cyber_border_width">1dp</dimen>
-    <dimen name="cyber_corner_radius">4dp</dimen>
-    <dimen name="cyber_chamfer">8dp</dimen>
-    <dimen name="cyber_bracket_length">10dp</dimen>
-    <dimen name="cyber_bracket_stroke">1.5dp</dimen>
-    <dimen name="cyber_ornament_stroke">1dp</dimen>
-    <dimen name="cyber_tile_padding">12dp</dimen>
-    <dimen name="cyber_tile_gap">8dp</dimen>
+    <dimen name="cyber_corner_radius">18dp</dimen>
+    <dimen name="cyber_corner_radius_small">12dp</dimen>
+    <dimen name="cyber_tile_padding">14dp</dimen>
+    <dimen name="cyber_tile_gap">10dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="cyber_text_clock">88sp</dimen>
     <dimen name="cyber_text_number">40sp</dimen>
     <dimen name="cyber_text_title">18sp</dimen>
     <dimen name="cyber_text_body">14sp</dimen>
-    <dimen name="cyber_text_label">11sp</dimen>
+    <dimen name="cyber_text_label">12sp</dimen>
 </resources>

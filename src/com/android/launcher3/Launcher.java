@@ -2379,6 +2379,10 @@ public class Launcher extends StatefulActivity<LauncherState>
             if (enableWorkspaceInflation() && view instanceof LauncherAppWidgetHostView lv) {
                 view = getAppWidgetHolder().attachViewToHostAndGetAttachedView(lv);
             }
+            // Modified by CyberHome: ensure item tag is restored if dropped by inflation/recycling
+            if (view.getTag() == null) {
+                view.setTag(item);
+            }
             workspace.addInScreenFromBind(view, item);
             if (boundAnim != null) {
                 // Animate all the applications up now

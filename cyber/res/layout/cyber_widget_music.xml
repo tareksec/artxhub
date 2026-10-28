@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- W5 Music strip: equalizer + title + prev / play-pause / next. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/cyber_widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/cyber_widget_inner_padding"
+        android:paddingEnd="6dp">
+
+        <!-- Animated equalizer: an indeterminate ProgressBar animates by itself inside widgets -->
+        <ProgressBar
+            android:id="@+id/cyber_music_eq_anim"
+            android:layout_width="24dp"
+            android:layout_height="20dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/cyber_eq_anim"
+            android:indeterminateOnly="true" />
+
+        <ImageView
+            android:id="@+id/cyber_music_eq_still"
+            android:layout_width="24dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/cyber_eq_frame1" />
+
+        <LinearLayout
+            android:id="@+id/cyber_music_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cyber_music_title"
+                style="@style/Cyber.TextAppearance.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/cyber_music_artist"
+                style="@style/Cyber.TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cyber_music_prev"
+            style="@style/Cyber.Widget.IconButton"
+            android:contentDescription="@string/cyber_music_prev"
+            android:src="@drawable/cyber_ic_prev" />
+
+        <ImageView
+            android:id="@+id/cyber_music_play"
+            style="@style/Cyber.Widget.IconButton"
+            android:layout_marginHorizontal="4dp"
+            android:contentDescription="@string/cyber_music_play_pause"
+            android:src="@drawable/cyber_ic_play" />
+
+        <ImageView
+            android:id="@+id/cyber_music_next"
+            style="@style/Cyber.Widget.IconButton"
+            android:contentDescription="@string/cyber_music_next"
+            android:src="@drawable/cyber_ic_next" />
+    </LinearLayout>
+</FrameLayout>

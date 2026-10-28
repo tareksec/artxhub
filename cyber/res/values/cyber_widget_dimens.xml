@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Widget-specific sizes. -->
+<resources>
+    <!-- Clock: digits auto-size between these bounds to fill their row -->
+    <dimen name="cyber_text_clock_min">24sp</dimen>
+    <dimen name="cyber_text_clock_max">160sp</dimen>
+    <dimen name="cyber_widget_clock_padding">10dp</dimen>
+    <dimen name="cyber_widget_clock_divider_margin">4dp</dimen>
+
+    <!-- Card widgets: content inset from the rounded card edge -->
+    <dimen name="cyber_widget_inner_padding">12dp</dimen>
+    <dimen name="cyber_widget_calendar_text">10sp</dimen>
+    <dimen name="cyber_widget_icon">22dp</dimen>
+    <dimen name="cyber_widget_icon_small">16dp</dimen>
+    <dimen name="cyber_widget_battery_segment_gap">3dp</dimen>
+</resources>

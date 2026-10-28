@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- One calendar cell. Today / header / muted variants change color and background from code. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_cal_cell"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_margin="1dp"
+    android:layout_weight="1"
+    android:fontFamily="@font/cyber_font_display"
+    android:gravity="center"
+    android:includeFontPadding="false"
+    android:maxLines="1"
+    android:textSize="@dimen/cyber_widget_calendar_text"
+    android:textStyle="bold" />

@@ -441,4 +441,38 @@
             launcher:transientTaskbarIconSize="52.8"/>
     </grid-option>
 
+    <!-- Modified by CyberHome: 4x8 grid with the CyberHome default layout. Selected when the
+         workspace has more than 5 rows (CyberHome defaults to 8). -->
+    <grid-option
+        launcher:name="cyber_4_by_8"
+        launcher:numRows="8"
+        launcher:numColumns="4"
+        launcher:numFolderRows="3"
+        launcher:numFolderColumns="3"
+        launcher:numHotseatIcons="4"
+        launcher:defaultLayoutId="@xml/cyber_default_workspace"
+        launcher:deviceCategory="phone" >
+
+        <display-option
+            launcher:name="Cyber Short"
+            launcher:minWidthDps="296"
+            launcher:minHeightDps="491.33"
+            launcher:iconImageSize="48"
+            launcher:iconTextSize="12.0"
+            launcher:allAppsBorderSpace="16"
+            launcher:allAppsCellHeight="104"
+            launcher:canBeDefault="true" />
+
+        <display-option
+            launcher:name="Cyber Tall"
+            launcher:minWidthDps="359"
+            launcher:minHeightDps="567"
+            launcher:iconImageSize="52"
+            launcher:iconTextSize="12.0"
+            launcher:allAppsBorderSpace="16"
+            launcher:allAppsCellHeight="104"
+            launcher:canBeDefault="true" />
+
+    </grid-option>
+
 </profiles>

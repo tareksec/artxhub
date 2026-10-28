@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
-<!-- CyberHome design tokens: colors (PROJECT_SPEC.md section 2). -->
+<!-- CyberHome design tokens: colors, light "Milk tea" theme (PROJECT_SPEC.md section 2).
+     The dark "Night cafe" theme is in values-night/cyber_colors.xml (same names).
+     Each accent has three steps: accent (text, icons), soft (fills, highlights), tint (card backgrounds). -->
 <resources>
-    <color name="cyber_bg">#FF0B0C0F</color>
-    <!-- Dot grid on the background: ~6% white -->
-    <color name="cyber_bg_dot">#0FFFFFFF</color>
-    <color name="cyber_surface">#FF15171C</color>
-    <color name="cyber_border">#FF2A2D35</color>
+    <color name="cyber_bg">#FFFBF6EF</color>
+    <color name="cyber_surface">#FFFFFFFF</color>
+    <color name="cyber_border">#FFEDE4DA</color>
 
-    <color name="cyber_accent_blue">#FF2F6BFF</color>
-    <color name="cyber_accent_pink">#FFFF6FA8</color>
-    <color name="cyber_accent_teal">#FF3DDBD0</color>
-    <color name="cyber_accent_cyan">#FF36D1DC</color>
+    <color name="cyber_text">#FF2B2A33</color>
+    <color name="cyber_text_dim">#FF8A8494</color>
+    <!-- Text and icons on a "soft" accent fill -->
+    <color name="cyber_on_accent">#FFFFFFFF</color>
 
-    <color name="cyber_text">#FFFFFFFF</color>
-    <color name="cyber_text_dim">#FF8A8F9C</color>
+    <color name="cyber_accent_blue">#FF4A6FD6</color>
+    <color name="cyber_soft_blue">#FF9DB8FF</color>
+    <color name="cyber_tint_blue">#FFE3EDFF</color>
+
+    <color name="cyber_accent_pink">#FFD9578A</color>
+    <color name="cyber_soft_pink">#FFF28AAE</color>
+    <color name="cyber_tint_pink">#FFFFE3EE</color>
+
+    <color name="cyber_accent_teal">#FF2E9C84</color>
+    <color name="cyber_soft_teal">#FF8FD8C8</color>
+    <color name="cyber_tint_teal">#FFDDF5EF</color>
+
+    <color name="cyber_accent_peach">#FFC98A2E</color>
+    <color name="cyber_soft_peach">#FFF2C278</color>
+    <color name="cyber_tint_peach">#FFFFF1DA</color>
 </resources>

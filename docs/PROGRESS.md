@@ -75,3 +75,274 @@ Known issues / left for later:
 - Wallpaper is not applied automatically yet (Task 8 "Apply Look").
 - `textFontWeight` in XML styles needs API 28+; on API 26–27 the family's bold face is used.
 - Not tested on a device yet.
+
+## Task 3 — Block Clock + Date widget (W1, W2) (2026-10-28)
+
+Changed:
+- `com.techvrs.cyberhome.cyber.widgets.clock.BlockClockWidgetProvider` + layout
+  `cyber_widget_clock.xml`: HH over MM (Orbitron Black, auto-sized to the cell), thin divider,
+  date line "Oct 09 · Wed". W2 is merged into W1 (allowed by the spec).
+- Time: `TextClock` for hour, minute and date → the system redraws every minute and follows the
+  12/24h setting; `updatePeriodMillis=0`, no alarms, no services, no wakeups.
+- Date: locale-aware pattern `getBestDateTimePattern(locale, "MMMdd") + " · " + "EEE"`,
+  re-applied on `LOCALE_CHANGED`.
+- Tap: opens the default clock app (`AlarmClock.ACTION_SHOW_ALARMS`), falls back to date &
+  time settings; no click if neither exists.
+- Sizing: default 2x2 cells (`targetCellWidth/Height`), min 110dp, resizable both ways down to
+  80dp. Picker preview: `previewLayout` (live layout, Android 12+) and `previewImage`
+  `cyber_widget_clock_preview.png` (older versions), rendered by `./gradlew cyberWidgetPreviews`.
+- `cyber/AndroidManifest.xml` (merged into all build types) holds our widget receivers; the
+  debug design screen moved to the `lawnWithQuickstepGithubDebug` variant source set.
+- Debug "CyberHome Design" screen now also inflates the real widget RemoteViews at 2 sizes.
+
+How the ornaments are rendered:
+- Slash: vector drawable `cyber_widget_clock_slash.xml` (one 1.2-unit stroke, corner to corner)
+  in an `ImageView` stacked over the hour `TextClock` inside a `FrameLayout`, `scaleType=fitXY`,
+  so it always spans the hour row at any widget size. No bitmaps, so no RemoteViews size limits.
+- Divider: `layer-list` drawable (1dp border-color line + 18dp×2dp cyan accent at the start)
+  as the background of a 2dp `ImageView`.
+- Fonts: XML font resources through the `Cyber.TextAppearance.*` styles; widget hosts inflate
+  the layout with our app's resources, so the bundled Orbitron/Share Tech Mono are used.
+
+Test plan (needs a device): long-press home → Widgets → CyberHome → Block Clock → drop on the
+home screen; check digits fill the cells, slash crosses the hour, 12/24h switch in system
+settings updates immediately, resizing re-fits the digits, tap opens the Clock app, change the
+system language and check the date line.
+
+Known issues / left for later:
+- Not tested on a device yet (picker, fonts in the host, autosize inside RemoteViews).
+- Very wide/flat sizes: the slash stretches with the row (looks flatter); fine for 2x2–4x2.
+
+## Tasks 4–8, 10 — Layout, all widgets, onboarding, privacy (2026-10-28)
+
+Done in one pass at the user's request (build only; NOT tested on a device yet).
+
+Task 4 — default layout and widget binding (findings):
+- Lawnchair picks the grid from the row/column prefs: the first `grid-option` in
+  `lawnchair/res/xml/device_profiles.xml` that fits supplies `defaultLayoutId`. Added grid
+  `cyber_4_by_8` and set the default rows to 8, so fresh installs load our layout.
+- `<appwidget>` items from a default layout are inserted as *pending*; on load Launcher3 tries
+  `bindAppWidgetIdIfAllowed` once. For a non-system launcher this succeeds only after the user
+  granted the system "Allow widget access" dialog with "Always allow". Otherwise Launcher3 shows
+  its built-in "Tap to set up" placeholder (tap → system dialog). So silent binding on a fresh
+  install is NOT possible; the onboarding asks for the permission first and then rebuilds the
+  default layout, after which all widgets bind silently.
+- Layout file is a template (`cyber/templates/`), generated per variant with the right package.
+
+Task 5–7 — widgets (all in `com.techvrs.cyberhome.cyber.widgets.*`):
+W3 Month calendar, W4 Battery strip, W6 Weather (Open-Meteo, manual city, WorkManager hourly,
+cached/stale state), W7 Character cards ×3 (blue/pink/teal, photo picker, title/number/caption,
+tap action phone/app/edit/none), W8 Day counter, W9 Water (tap logs a glass, optional
+WorkManager reminders), W5 Music strip (media keys; optional title via notification access),
+W10 Settings/Messages tiles, W11 Dial button (opens the drawer).
+- HUD frames are drawn per widget size into one bitmap (`CyberFrameRenderer`), max ~640 KB.
+- Date/battery/media changes come from receivers registered in the launcher process
+  (`CyberRuntime`, started by `CyberInitProvider`): no alarms, wake locks or services.
+
+Task 8 — onboarding: first launch opens "Welcome to CyberHome" → Apply look:
+home role → widget access → wallpaper → 4×8 layout. Settings → CyberHome → "Reset to default
+look", widget editors, weather city, water, music info, "Switch back to previous launcher", About.
+
+Task 10 (partial) — About (offline, GPL notice, credits, source link `TODO`); privacy: removed
+Lawnchair's automatic network calls (see UPSTREAM_CHANGES.md); `docs/PERMISSIONS.md`;
+`docs/RELEASE_NOTES.md` with the signing steps.
+
+Not done / known issues:
+- Task 9 (pixel fidelity pass vs. the reference) needs screenshots from a real device.
+- Widget picker previews exist only for the Block Clock; others show the app icon.
+- Source repo URL is still `TODO` (`CYBER_SOURCE_URL` in AboutActivity.kt).
+- Release APK is signed with the debug key until `keystore.properties` exists.
+- Whole build untested on a device: expect small layout/spacing fixes after the first test.
+
+## Redesign — cozy anime look, light + dark (2026-10-28)
+
+The owner clarified the direction: the reference is **cozy anime** (character art + soft pastels),
+not cyber/HUD. Rebuilt the design system around that, with two versions.
+
+Changed:
+- Colors: `values/cyber_colors.xml` = Light "Milk tea" (cream), `values-night/` = Dark "Night cafe"
+  (plum-charcoal). Each accent (blue, pink, teal, peach) has accent / soft / tint steps.
+- Light/dark switch: `CyberThemeMode` reuses Lawnchair's `pref_launcherTheme` (Light / Dark /
+  System), so drawer, folders, settings and our widgets always match. Default is back to
+  upstream's "system" (our earlier "dark" default was removed from `PreferenceManager.kt`).
+  Picker ("Look: Light / Dark / Auto") in onboarding and CyberHome settings.
+- Widgets get every theme color from code (`CyberThemeMode.themed()` context +
+  `RemoteViews.textColor/iconColor` helpers), never from `@color` in widget XML, because the host
+  resolves XML resources with its own configuration (would break a forced Light/Dark choice).
+  Tinted white shapes (`cyber_widget_round_bg/pill/circle`) give round backgrounds without bitmaps.
+- `CyberRuntime` redraws all widgets when the choice or the system day/night changes, and swaps the
+  wallpaper to the matching variant only while the user still has our wallpaper (wallpaper id check).
+- Frame renderer: rounded 18dp pastel cards (no chamfers/brackets); card art fades into its tint.
+- Font: Nunito (OFL) replaces Orbitron + Share Tech Mono (removed with their licenses).
+- Icons: rounded 2dp strokes; new gear and heart-bubble icons. New pastel placeholder card art.
+- Wallpapers: `./gradlew cyberWallpapers` now renders light and dark pastel-blob wallpapers.
+- Our screens extend `CyberActivity` (themed resources, matching status bar icons, recreate on change).
+- Launcher accent pink; drawer/folder color overrides removed so they follow the launcher theme.
+- Docs: PROJECT_SPEC §2 tokens, ASSETS.md, NOTICE.md, UPSTREAM_CHANGES.md, RELEASE_NOTES.md.
+
+Build: `assembleLawnWithQuickstepGithubDebug` succeeds. NOT tested on a device (none connected).
+
+Known issues / to check on a device:
+- Forced Light/Dark vs. system: widget text/backgrounds should follow the choice; verify each widget.
+- Wallpapers are larger now (~2.8 MB total PNG, soft gradients); could convert to WebP later.
+- Nunito is a Latin subset: Bengali/Chinese text falls back to the system font (intended).
+- Calendar "today" highlight uses two fixed-color drawables (light/dark) chosen in code.
+
+## Cozy Board + owner's art (2026-10-28)
+
+Owner's test of the previous build (debug APK on their phone): 10–60 s white screen on first
+start, 10–30 s "Working…", and after "Apply look" the home page showed Google's default layout
+(Google folder, Meet, Assistant, Photos) instead of ours. Plan: `../bug-fix/` (approved: option B).
+
+Changed:
+- **Cozy Board** (`cyber/src/.../cyber/board/`): the whole first home page is one in-launcher
+  custom widget (`CozyBoardWidget` via Launcher3 `CustomWidgetManager`, drawn by `CozyBoardView`).
+  No RemoteViews, no widget-bind permission, light/dark instantly, animated music bars, tap
+  feedback, ExploreByTouchHelper accessibility. Layout follows the reference composition
+  (blue card + clock, two tiles, pink card + anniversary pill, battery, calendar, weather, dial +
+  music strip, 2×2 favorite apps, teal "Drink" card). Long-press still moves/resizes it.
+- **BUG-3 fix**: `ModelDbController` hook: our grid ignores partner / auto-install layouts and
+  adds the board after `cyber_default_workspace.xml` (now only dock + page 2 apps).
+- **Apply flow**: home role → layout (one DB reset, suspends until done) → wallpaper; per-step
+  status; no widget-access dialog any more. Steps log their duration (`adb logcat -s CyberLook`).
+- **Startup**: `CyberInitProvider` work runs on the first idle main-thread moment; onboarding
+  opens after the launcher's first frame.
+- **Owner's art**: 4 characters (frost, sakura, sleepy, lilac) and 8 wallpapers bundled
+  (resized; originals + "all rights reserved" LICENSE in `assets-proprietary/`). Two provided
+  characters were left out of the defaults (see chat).
+- **Image upload**: card editor shows the built-in characters + "Pick image" (photo picker,
+  keeps PNG transparency; cut-outs stand on the card, photos fill it). New Wallpaper screen:
+  Auto light/dark (snow / lounge), any bundled wallpaper, or "Upload my own". New "Favorite apps"
+  screen for the 2×2 block. Settings → CyberHome → "Cozy Board" section.
+- Removed the code-generated pastel wallpapers and their Gradle task (−2.8 MB).
+
+Not verified: no phone connected and the emulator cannot run here (no hypervisor driver), so
+nothing of this was run on a device yet.
+
+Build: debug (46.2 MB) and release (19.5 MB, R8, signed with the debug key; `CozyBoardWidget` kept by R8) both succeed.
+
+## Remaining plan: BUG-1/2, Phase 4–7 code (2026-10-28)
+
+No phone was connected, so the owner chose "code first, device later". **Nothing below was run on
+a device.** Debug and release builds succeed; release APK verified with `apksigner` (debug key).
+
+Changed:
+- **BUG-2, one model reload:** "Apply look" no longer wipes the DB and reloads after the grid
+  change (the grid change already reloaded, so the workspace loaded twice). It now stores a reset
+  request (`CyberLayout.requestReset`) that the next workspace load on our grid consumes inside
+  `ModelDbController.loadDefaultFavoritesIfNecessary()`. Grid prefs are only written when they
+  differ (each write reloads). Afterwards the onboarding checks the DB for the Cozy Board
+  (BUG-3 guard) and shows "Retry" if it is missing.
+- **BUG-1, starting window:** `AppTheme` gets `windowSplashScreenBackground = cyber_bg` (cream /
+  plum, follows the system day/night) instead of the white default. Below Android 12 the starting
+  window already shows the wallpaper.
+- **Phase 4 theming:** squircle icons (config default); dock background pill in our surface color
+  at 82 % (`CyberLauncherStyle`, set at "Apply look", swapped on light/dark change while it is
+  still our color). Search bar: Lawnchair's themed default. Drawer/folders: launcher theme + pink.
+- **Decoration on/off**, **Swap sides** (mirror) and **hide parts** in the new "Edit board" screen
+  (Settings → CyberHome → Edit board). The composition is fixed, so a hidden part leaves a gap;
+  free reordering of tiles is not implemented.
+- **Phase 5:** crop screen after "Pick image" (3:4 frame, pinch/drag; or use the whole image);
+  image decode/save moved off the main thread (`CardImages`). **Theme packs & backup** screen and
+  format (`CyberPack`, docs/THEME_PACKS.md): apply a pack, back up / restore all CyberHome settings
+  and own images (Lawnchair's backup did not include ours).
+- **Phase 6 error states:** water reminders say when notifications are off (+ settings button);
+  onboarding says when CyberHome is not the home app (+ button). Weather offline / music without
+  access already had states.
+- **BUG-6 size:** release APK **20.1 → 12.9 MB**: art PNG/JPG → WebP (2.6 → 1.0 MB, originals stay
+  in `assets-proprietary/`), English only (owner's choice; `localeFilters = ['en']`, arsc 5.4 MB →
+  small), release ABIs arm64-v8a + armeabi-v7a only. AppWidgets kept (owner's choice).
+- **Phase 7:** `versionName` 0.2.0 (APK `CyberHome.0.2.0.github.release.apk`). Signing via
+  `keystore.properties` already existed and is gitignored; the owner must create the keystore
+  (passwords are theirs). Source repo URL stays `TODO` (owner).
+
+Owner decisions this round: English only (so the Bengali translation step of Phase 6 is dropped;
+`values-bn` files remain in the tree but are not packaged), keep AppWidgets, ARM-only release.
+
+Not done / blocked:
+- **Phase 0 (device):** install, logcat, cold start and apply time (`adb logcat -s CyberLook`),
+  BUG-3 confirmation. Needs the owner's phone over USB.
+- **Baseline profile:** regenerating needs a device or emulator (none can run here).
+- **Fidelity pass (Phase 4):** needs screenshots of the board from the owner's phone.
+- **Full test checklist** (bug-fix/05): needs a device.
+- Own release keystore: owner runs `keytool` (docs/RELEASE_NOTES.md).
+
+Known risks to check first on the device:
+- Reset-request path: if the board is missing after Apply, the onboarding shows Retry; logcat tag
+  `CyberLayout` prints "reset requested".
+- Dock color pref is fixed per mode; first theme switch after Apply should swap it.
+- Crop gestures inside the scrolling settings page.
+
+## Device verification & crash fix (2026-10-28)
+
+Tested on physical device connected via ADB:
+- **Device:** Nokia G10 (`Rogue_00WW`, `ROGA_sprout`), Android 13 (API 33, `ro.build.version.release = 13`).
+
+### 1. Crash on launch (FATAL EXCEPTION)
+Key stack trace:
+```
+FATAL EXCEPTION: main
+Process: com.techvrs.cyberhome.debug, PID: 31374
+java.lang.IllegalArgumentException: Only VectorDrawables and rasterized asset types are supported ex. PNG, JPG, WEBP
+    at androidx.compose.ui.res.PainterResources_androidKt.loadVectorResource(PainterResources.android.kt:95)
+    at androidx.compose.ui.res.PainterResources_androidKt.painterResource(PainterResources.android.kt:67)
+    at com.techvrs.cyberhome.cyber.onboarding.OnboardingActivityKt.OnboardingScreen(OnboardingActivity.kt:101)
+```
+- **Cause:** `OnboardingActivity.kt` loaded `R.drawable.cyber_board_preview` (an Android `<layer-list>` XML) via Jetpack Compose's `painterResource()`. Compose only supports VectorDrawables and raster formats.
+- **Fix:** Switched preview to a native Compose Box with rounded background + `painterResource(R.drawable.cyber_char_sakura)` (WebP raster asset).
+
+### 2. Upstream workspace custom widget binding & host view isolation
+- **Issue 2A (Item dropped from workspace):** In `Launcher.java` / `LauncherWidgetHolder.java`, `enableWorkspaceInflation()` recycled views through `AppWidgetHost.createView()`, stripping the item tag on custom in-launcher widgets (`isCustomWidget()`), which caused `WorkspaceLayoutManager` to log `Attempted to add null item to workspace` and drop the Cozy Board.
+  - **Fix:** In `LauncherWidgetHolder.java`, bypass `AppWidgetHost` recycling for `isCustomWidget()` and preserve tag; in `Launcher.java`, restore item tag if null.
+- **Issue 2B (Chrome shortcuts layout leak):** `CustomWidgetManager.newInfo()` cloned the first installed system widget provider (`QuickActionSearchWidgetProviderSearch` from Chrome) to create `CustomAppWidgetProviderInfo`. `initialLayout` and `initialKeyguardLayout` retained Chrome's layout ID, causing `AppWidgetHostView` to inflate Chrome shortcuts into the Cozy Board view.
+  - **Fix:** Cleared `initialLayout = 0` and `initialKeyguardLayout = 0` in `CustomWidgetManager.java` and `CozyBoardWidget.kt`. In `LauncherAppWidgetHostView.java`, intercepted `updateAppWidget()`, `setColorResources()`, and `getErrorView()` to return early for `isCustomWidget()`.
+
+### Test Results
+- **Phone:** Nokia G10 (`Rogue_00WW`), Android 13
+- **Apply look timing:**
+  - `CyberLayout`: reset requested: rebuilding the default layout
+  - `CyberLook`: layout took 2147 ms
+  - `CyberLook`: wallpaper took 242 ms
+- **Cold start (`am start -W`):**
+  - Release APK (`com.techvrs.cyberhome`): **1782 ms** (TotalTime)
+  - Debug APK (`com.techvrs.cyberhome.debug`): 8426 ms
+- **Board appears on home screen:** **YES** (full Cozy Board: clock, character cards, calendar, weather, music player, favorites, water tracker).
+- **Survives phone reboot (`adb reboot`):** **YES** (verified via uiautomator dump and screen capture after boot).
+- **Screenshots saved to Desktop:**
+  - `cyberhome_1.png`: Onboarding welcome screen
+  - `cyberhome_2.png`: Home screen with Cozy Board after "Apply look"
+  - `cyberhome_3.png`: Home screen with Cozy Board persisting after phone reboot
+
+### Still Open
+- Owner's release keystore (`keytool` generation per `docs/RELEASE_NOTES.md`).
+- Baseline profile generation.
+- All Apps bottom illustration asset (petals + character footer overlay) implementation upon user confirmation.
+- Owner approval before git commit.
+
+## Board & UI Improvements Pass (2026-10-28)
+
+Tested and verified on Nokia G10 (Android 13) on both Debug and Release APKs:
+
+### 1. Music Bar "All Apps" Dial Icon (`Tile.DIAL`)
+- **Issue:** Tapping the dial icon beside the music bar did not open anything because it used a generic unhandled `Intent(Intent.ACTION_ALL_APPS)`.
+- **Fix:** Switched to direct launcher state transition:
+  `Launcher.getLauncher(context).stateManager.goToState(LauncherState.ALL_APPS)`.
+- **Verification:** Verified on device; tapping the dial button immediately slides open the All Apps drawer.
+
+### 2. Favorite Apps Grid - 2 Empty Slots Beside Drink Widget
+- **Issue:** Slots for Gallery and Music were showing as blank white squircles because `packageManager.resolveActivity()` returned `com.android.internal.app.ResolverActivity` (package `"android"`) when multiple apps matched the category on Nokia G10 (e.g. Google Photos vs Photos Go, YouTube Music vs Musicolet). `CozyBoardView` rejected package `"android"`, leaving slots empty.
+- **Fix:** In `loadApp()`, if `resolveActivity()` returns `"android"`, falls back to `pm.queryIntentActivities()` to pick the first installed user app. Also added secondary MIME type fallbacks (`image/*`, `audio/*`) and an unassigned `+` placeholder.
+- **Verification:** Verified on device; all 4 apps now show properly: Google Photos, Camera, YouTube Music, Chrome.
+
+### 3. Single Tap Unclickable & Long-Press Handling on Cards
+- **Issue:** Single clicks on decorative character cards could unintentionally trigger dialer or apps. Holding down (long press) was being cancelled by Launcher3's workspace drag-and-drop listener before the view's long-press timer completed.
+- **Fix:**
+  - Made `Tile.BLUE_CARD`, `Tile.PINK_CARD`, `Tile.BATTERY`, and `Tile.COUNTER` ignore single clicks in `performClick()`.
+  - Added `parent?.requestDisallowInterceptTouchEvent(true)` on `ACTION_DOWN` in `CozyBoardView.onTouchEvent()`, with release on `ACTION_UP`/`ACTION_CANCEL`/`ACTION_MOVE` exit.
+  - Long press triggers haptic feedback (`HapticFeedbackConstants.LONG_PRESS`) and opens `CardEditActivity` (or `DayCounterActivity` / Power summary).
+- **Verification:** Verified on device; single tap does nothing, holding down immediately opens `CardEditActivity`.
+
+### 4. All Apps Bottom Illustration (Petals / Anime Character)
+- **Investigation:** Analyzed `ActivityAllAppsContainerView`, `all_apps_content.xml`, and `AllAppsRecyclerView`.
+- **Implementation Path:** Can be added as a pinned bottom overlay (`layout_gravity="bottom"`) or decorative footer inside `all_apps_content.xml` with bottom padding on `AllAppsRecyclerView` so that scrolling apps never obscure the art when reaching the end of the drawer. Ready to implement once the owner provides the isolated transparent artwork or selects built-in assets.
+

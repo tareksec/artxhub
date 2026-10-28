@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- CyberHome user-visible strings (English default; Bengali in values-bn). -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Common -->
+    <string name="cyber_save">Save</string>
+    <string name="cyber_off">Off</string>
+    <string name="cyber_skip">Not now</string>
+    <string name="cyber_working">Working…</string>
+    <string name="cyber_widget_edit">Edit</string>
+
+    <!-- Widgets: names and picker descriptions -->
+    <string name="cyber_widget_clock_label">Block Clock</string>
+    <string name="cyber_widget_clock_description">Big HH/MM clock with date. Tap to open your clock app.</string>
+    <string name="cyber_widget_calendar_label">Month Calendar</string>
+    <string name="cyber_widget_calendar_label_desc">This month with today highlighted. Tap to open your calendar.</string>
+    <string name="cyber_widget_battery_label">Battery Strip</string>
+    <string name="cyber_widget_battery_desc">Segmented battery bar. Teal while charging, pink when low.</string>
+    <string name="cyber_widget_battery_level">Battery <xliff:g id="percent">%1$d</xliff:g> percent</string>
+    <string name="cyber_widget_battery_charging">Battery <xliff:g id="percent">%1$d</xliff:g> percent, charging</string>
+    <string name="cyber_widget_weather_label">Weather</string>
+    <string name="cyber_widget_weather_desc">Temperature for a city you choose (Open-Meteo).</string>
+    <string name="cyber_widget_weather_set_city">Set city</string>
+    <string name="cyber_widget_card_blue_label">Card · Blue</string>
+    <string name="cyber_widget_card_pink_label">Card · Pink</string>
+    <string name="cyber_widget_card_teal_label">Card · Teal</string>
+    <string name="cyber_widget_card_desc">Framed picture card. Pick your own image with the pencil.</string>
+    <string name="cyber_widget_counter_label">Day Counter</string>
+    <string name="cyber_widget_counter_desc">Days since or until a date you choose.</string>
+    <string name="cyber_widget_water_label">Drink Water</string>
+    <string name="cyber_widget_water_desc">Tap to log a glass. Optional reminders.</string>
+    <string name="cyber_widget_music_label">Music Strip</string>
+    <string name="cyber_widget_music_desc">Previous, play/pause and next for the current player.</string>
+    <string name="cyber_widget_dial_label">App Dial</string>
+    <string name="cyber_widget_dial_desc">Round button that opens the app drawer.</string>
+    <string name="cyber_dial_description">Open all apps</string>
+    <string name="cyber_widget_tile_settings_label">Tile · Settings</string>
+    <string name="cyber_widget_tile_messages_label">Tile · Messages</string>
+    <string name="cyber_widget_tile_desc">HUD shortcut tile.</string>
+    <string name="cyber_tile_settings">Settings</string>
+    <string name="cyber_tile_messages">Messages</string>
+
+    <!-- Cards -->
+    <string name="cyber_card_blue_title">Phone · 来電</string>
+    <string name="cyber_card_blue_caption">Call a friend</string>
+    <string name="cyber_card_pink_title">Special day</string>
+    <string name="cyber_card_pink_caption">Tap to make it yours</string>
+    <string name="cyber_card_teal_title">Buddy</string>
+    <string name="cyber_card_teal_caption">Tap to make it yours</string>
+    <string name="cyber_card_edit_title">Edit card</string>
+    <string name="cyber_card_edit_subtitle">Picture, labels and what a tap does.</string>
+    <string name="cyber_card_pick_image">Pick image</string>
+    <string name="cyber_card_reset_image">Use placeholder art</string>
+    <string name="cyber_card_image_saved">Image saved.</string>
+    <string name="cyber_card_image_failed">Could not read that image.</string>
+    <string name="cyber_card_field_title">Tag</string>
+    <string name="cyber_card_field_number">Number</string>
+    <string name="cyber_card_field_caption">Caption</string>
+    <string name="cyber_card_tap_action">On tap</string>
+    <string name="cyber_card_tap_phone">Phone</string>
+    <string name="cyber_card_tap_app">App</string>
+    <string name="cyber_card_tap_edit">Edit</string>
+    <string name="cyber_card_tap_none">None</string>
+    <string name="cyber_card_pick_app">Choose an app</string>
+
+    <!-- Day counter -->
+    <string name="cyber_counter_default_label">Days</string>
+    <string name="cyber_counter_since">since</string>
+    <string name="cyber_counter_until">until</string>
+    <string name="cyber_counter_title">Day counter</string>
+    <string name="cyber_counter_subtitle">Counts days since a past date or until a future one.</string>
+    <string name="cyber_counter_label">Label</string>
+
+    <!-- Water -->
+    <string name="cyber_water_title">Drink</string>
+    <string name="cyber_water_caption">Stay hydrated</string>
+    <string name="cyber_water_log_glass">Log a glass of water</string>
+    <string name="cyber_water_settings_title">Water reminder</string>
+    <string name="cyber_water_settings_subtitle">Tap the tile to log a glass. The count resets every day.</string>
+    <string name="cyber_water_today">Today <xliff:g id="count">%1$d</xliff:g> / <xliff:g id="goal">%2$d</xliff:g></string>
+    <string name="cyber_water_goal">Daily goal (glasses)</string>
+    <string name="cyber_water_reminders">Reminders</string>
+    <string name="cyber_water_every_hours"><xliff:g id="hours">%1$d</xliff:g>h</string>
+    <string name="cyber_water_reminder_note">Reminders run between 08:00 and 22:00 until you reach your goal. Android may delay them to save battery. Needs notification permission.</string>
+    <string name="cyber_water_channel">Water reminders</string>
+    <string name="cyber_water_notifications_off">Notifications for CyberHome are off, so reminders will not show. The tile still counts your glasses.</string>
+    <string name="cyber_open_notification_settings">Open notification settings</string>
+    <string name="cyber_water_notification_title">Time for some water</string>
+    <string name="cyber_water_notification_text"><xliff:g id="count">%1$d</xliff:g> of <xliff:g id="goal">%2$d</xliff:g> glasses today</string>
+
+    <!-- Weather -->
+    <string name="cyber_weather_title">Weather city</string>
+    <string name="cyber_weather_subtitle">Type a city name. No location permission is used.</string>
+    <string name="cyber_weather_current">Current city</string>
+    <string name="cyber_weather_city_hint">City</string>
+    <string name="cyber_weather_search">Search</string>
+    <string name="cyber_weather_searching">Searching…</string>
+    <string name="cyber_weather_no_results">No city found.</string>
+    <string name="cyber_weather_offline">No connection. Try again later.</string>
+    <string name="cyber_weather_privacy">Weather data: Open-Meteo.com. Only the city name (search) and its coordinates (forecast) are sent, about once an hour.</string>
+
+    <!-- Music -->
+    <string name="cyber_music_prev">Previous track</string>
+    <string name="cyber_music_next">Next track</string>
+    <string name="cyber_music_play_pause">Play or pause</string>
+    <string name="cyber_music_title_default">MUSIC</string>
+    <string name="cyber_music_playing">Playing</string>
+    <string name="cyber_music_nothing">Nothing playing</string>
+    <string name="cyber_music_tap_for_info">Tap for track info</string>
+    <string name="cyber_music_access_title">Music track info</string>
+    <string name="cyber_music_access_subtitle">Optional</string>
+    <string name="cyber_music_access_body">The music strip buttons always work. To also show the song title, Android requires \"notification access\" for CyberHome. CyberHome uses it only to read what is playing (and for notification dots). Nothing leaves your phone. You can turn it off any time in the same settings page.</string>
+    <string name="cyber_music_access_on">Access is ON</string>
+    <string name="cyber_music_access_off">Access is OFF</string>
+    <string name="cyber_music_access_open">Open notification access settings</string>
+
+    <!-- Onboarding / Apply Look -->
+    <string name="cyber_onboarding_title">Welcome to CyberHome</string>
+    <string name="cyber_onboarding_subtitle">One tap sets up your cozy home screen.</string>
+    <string name="cyber_reset_title">Reset to default look</string>
+    <string name="cyber_reset_subtitle">Replaces your current home screen with the CyberHome layout. Your apps stay in the app drawer.</string>
+    <string name="cyber_apply_look">Apply look</string>
+    <string name="cyber_step_home">1 · Default home app</string>
+    <string name="cyber_step_home_desc">Android asks you to choose CyberHome as home app.</string>
+    <string name="cyber_step_wallpaper">3 · Wallpaper</string>
+    <string name="cyber_step_wallpaper_desc">A wallpaper that matches light or dark mode (change it any time in settings).</string>
+    <string name="cyber_step_wallpaper_failed">Could not set the wallpaper.</string>
+    <string name="cyber_step_layout">2 · Home layout</string>
+    <string name="cyber_step_layout_desc">The Cozy Board on page 1: clock, characters, calendar, weather, music and more.</string>
+    <string name="cyber_step_layout_failed">The Cozy Board did not appear on the home screen. Tap Retry.</string>
+    <string name="cyber_retry">Retry</string>
+    <string name="cyber_onboarding_note">You can run this again later from Settings → CyberHome → Reset to default look.</string>
+    <string name="cyber_onboarding_done">Done. Enjoy your new home screen.</string>
+    <string name="cyber_go_home">Go to home screen</string>
+    <string name="cyber_onboarding_not_home">CyberHome is not your home app yet, so the Home button still opens your old launcher.</string>
+    <string name="cyber_onboarding_choose_home">Choose home app</string>
+
+    <!-- Settings -->
+    <string name="cyber_settings_title">CyberHome</string>
+    <string name="cyber_settings_entry_description">Look, widgets, about</string>
+    <string name="cyber_settings_reset">Reset to default look</string>
+    <string name="cyber_settings_reset_desc">Wallpaper, widgets and the 4×8 layout again.</string>
+    <string name="cyber_settings_widgets">Widgets</string>
+    <string name="cyber_settings_no_cards">No character cards on the home screen.</string>
+    <string name="cyber_settings_edit_card">Edit card <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="cyber_settings_day_counter">Day counter <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="cyber_settings_launcher">Launcher</string>
+    <string name="cyber_settings_switch_back">Switch back to previous launcher</string>
+    <string name="cyber_settings_switch_back_desc">Opens Android\'s Home app setting. Choose your old launcher there. Uninstalling CyberHome also brings it back.</string>
+
+    <!-- About -->
+    <string name="cyber_about_title">About</string>
+    <string name="cyber_about_license">CyberHome is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3 or later. It is based on Lawnchair and Launcher3, which are licensed under the Apache License 2.0. It comes with ABSOLUTELY NO WARRANTY.</string>
+    <string name="cyber_about_source">Source code</string>
+    <string name="cyber_about_source_todo">Public repository link coming soon</string>
+    <string name="cyber_about_gpl">GNU GPL v3</string>
+    <string name="cyber_about_credits">Credits</string>
+    <string name="cyber_about_credit_lawnchair">The launcher CyberHome is built on (Apache 2.0 / GPL)</string>
+    <string name="cyber_about_credit_launcher3">Android Open Source Project launcher (Apache 2.0)</string>
+    <string name="cyber_about_credit_nunito">Font, The Nunito Project Authors (SIL OFL 1.1)</string>
+    <string name="cyber_about_credit_openmeteo">Weather data (CC BY 4.0)</string>
+    <string name="cyber_about_privacy">Privacy: no ads, no analytics. The only network access by CyberHome itself is the weather widget (Open-Meteo).</string>
+
+    <!-- Light / dark mode -->
+    <string name="cyber_theme_title">Look</string>
+    <string name="cyber_theme_light">Light</string>
+    <string name="cyber_theme_dark">Dark</string>
+    <string name="cyber_theme_system">Auto</string>
+    <!-- Cozy Board (the home page) -->
+    <string name="cyber_board_label">Cozy Board</string>
+    <string name="cyber_board_settings_caption">设置 · SET UP</string>
+    <string name="cyber_board_messages_caption">短信 · MESSAGE</string>
+    <string name="cyber_board_a11y_blue">Blue character card</string>
+    <string name="cyber_board_a11y_pink">Pink character card</string>
+    <string name="cyber_board_a11y_counter">Day counter</string>
+    <string name="cyber_board_a11y_clock">Clock, opens alarms</string>
+    <string name="cyber_board_a11y_battery">Battery</string>
+    <string name="cyber_board_a11y_calendar">Calendar</string>
+    <string name="cyber_board_a11y_weather">Weather</string>
+    <string name="cyber_board_a11y_music">Music</string>
+    <string name="cyber_board_a11y_app">Favorite app</string>
+    <string name="cyber_char_frost">Frost</string>
+    <string name="cyber_char_sakura">Sakura</string>
+    <string name="cyber_char_sleepy">Sleepy</string>
+    <string name="cyber_char_lilac">Lilac</string>
+    <string name="cyber_card_characters">Characters</string>
+    <string name="cyber_crop_hint">Pinch to zoom, drag to move. The frame has the card\'s shape.</string>
+    <string name="cyber_crop_use">Use this crop</string>
+    <string name="cyber_crop_whole">Use the whole image</string>
+    <string name="cyber_crop_cancel">Cancel</string>
+    <string name="cyber_card_image_tip">Tip: a PNG with a transparent background stands on the card like the built-in characters; any other photo fills the card.</string>
+
+    <!-- Wallpaper -->
+    <string name="cyber_wallpaper_title">Wallpaper</string>
+    <string name="cyber_wallpaper_subtitle">Pick one of the built-in wallpapers or use your own photo. Only the home screen changes.</string>
+    <string name="cyber_wallpaper_auto">Auto (light / dark)</string>
+    <string name="cyber_wallpaper_auto_desc">A bright wallpaper in light mode, a calm one in dark mode.</string>
+    <string name="cyber_wallpaper_upload">Upload my own</string>
+    <string name="cyber_wallpaper_applying">Applying…</string>
+    <string name="cyber_wallpaper_done">Wallpaper set</string>
+    <string name="cyber_wallpaper_failed">Could not set the wallpaper</string>
+
+    <!-- Board settings -->
+    <string name="cyber_settings_board">Cozy Board</string>
+    <string name="cyber_settings_card_blue">Blue card</string>
+    <string name="cyber_settings_card_pink">Pink card</string>
+    <string name="cyber_settings_card_teal">Drink card</string>
+    <string name="cyber_settings_board_counter">Anniversary counter</string>
+    <string name="cyber_settings_board_apps">Favorite apps (2×2)</string>
+    <string name="cyber_board_apps_title">Favorite apps</string>
+    <string name="cyber_board_apps_subtitle">Choose the four apps in the small 2×2 block.</string>
+    <string name="cyber_board_apps_slot">App <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="cyber_board_apps_default">Default</string>
+
+    <!-- Edit board -->
+    <string name="cyber_board_edit_title">Edit board</string>
+    <string name="cyber_board_edit_subtitle">Show or hide parts of the Cozy Board. A hidden part leaves its space free.</string>
+    <string name="cyber_board_edit_entry_desc">Decoration, layout side, hide parts</string>
+    <string name="cyber_board_decoration">Decoration</string>
+    <string name="cyber_board_decoration_desc">Thin lines, \"+\" marks and card corners like the reference. Off: pure cozy.</string>
+    <string name="cyber_board_mirror">Swap sides</string>
+    <string name="cyber_board_mirror_desc">Puts the clock column on the left.</string>
+    <string name="cyber_board_parts">Parts</string>
+    <string name="cyber_board_part_clock">Clock and date</string>
+    <string name="cyber_board_part_shortcuts">Settings and Messages tiles</string>
+    <string name="cyber_board_part_music">Music strip and app dial</string>
+
+    <!-- Theme packs and backup -->
+    <string name="cyber_pack_title">Theme packs &amp; backup</string>
+    <string name="cyber_pack_subtitle">A theme pack is a .zip with card art, labels and a wallpaper. A backup is the same kind of file with all your CyberHome settings.</string>
+    <string name="cyber_pack_entry_desc">Apply a pack, save or restore your settings</string>
+    <string name="cyber_pack_apply">Apply a theme pack</string>
+    <string name="cyber_pack_apply_desc">Pick a CyberHome pack (.zip)</string>
+    <string name="cyber_backup_save">Back up CyberHome settings</string>
+    <string name="cyber_backup_save_desc">Cards, your images, counter, water, weather city, wallpaper and board settings</string>
+    <string name="cyber_backup_restore">Restore a backup</string>
+    <string name="cyber_backup_restore_desc">Replaces the current CyberHome settings</string>
+    <string name="cyber_pack_applied">Done.</string>
+    <string name="cyber_backup_saved">Backup saved.</string>
+    <string name="cyber_pack_not_a_pack">This file is not a CyberHome pack.</string>
+    <string name="cyber_pack_too_new">This pack needs a newer version of CyberHome.</string>
+    <string name="cyber_pack_failed">Something went wrong. Nothing or only part was changed.</string>
+    <string name="cyber_pack_note">The home screen layout (apps, folders) is not in this file; the launcher\'s own Backup in its settings saves that.</string>
+</resources>

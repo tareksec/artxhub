@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
-<!-- Display family for big digits and titles: Orbitron (SIL OFL 1.1, docs/licenses/OFL-Orbitron.txt). -->
+<!-- The one CyberHome type family: Nunito, a soft rounded sans (SIL OFL 1.1, docs/licenses/OFL-Nunito.txt).
+     Latin subset; other scripts (Bengali, CJK) fall back to the system font. -->
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
     <font
-        android:font="@font/cyber_orbitron_bold"
+        android:font="@font/cyber_nunito_regular"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+    <font
+        android:font="@font/cyber_nunito_bold"
         android:fontStyle="normal"
         android:fontWeight="700" />
     <font
-        android:font="@font/cyber_orbitron_black"
+        android:font="@font/cyber_nunito_extrabold"
+        android:fontStyle="normal"
+        android:fontWeight="800" />
+    <font
+        android:font="@font/cyber_nunito_black"
         android:fontStyle="normal"
         android:fontWeight="900" />
 </font-family>

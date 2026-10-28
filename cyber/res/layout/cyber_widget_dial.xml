@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- W11 Dial button: round card with a soft ring; opens the app drawer. Colors from code. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:contentDescription="@string/cyber_dial_description"
+    android:padding="6dp">
+
+    <ImageView
+        android:id="@+id/cyber_dial_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/cyber_widget_circle" />
+
+    <ImageView
+        android:id="@+id/cyber_dial_ring"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/cyber_widget_dial_ring" />
+
+    <ImageView
+        android:id="@+id/cyber_dial_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:src="@drawable/cyber_ic_apps" />
+</FrameLayout>

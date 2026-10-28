@@ -104,11 +104,24 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
 
     @Override
     public void setColorResources(@Nullable SparseIntArray colors) {
+        // Modified by CyberHome: in-launcher custom widgets are local views, not RemoteViews
+        if (getAppWidgetInfo() instanceof LauncherAppWidgetProviderInfo lawpi && lawpi.isCustomWidget()) {
+            return;
+        }
         if (colors == null) {
             resetColorResources();
         } else {
             super.setColorResources(colors);
         }
+    }
+
+    @Override
+    protected View getErrorView() {
+        // Modified by CyberHome: in-launcher custom widgets never show error view
+        if (getAppWidgetInfo() instanceof LauncherAppWidgetProviderInfo lawpi && lawpi.isCustomWidget()) {
+            return new View(getContext());
+        }
+        return super.getErrorView();
     }
 
     @Override
@@ -134,6 +147,10 @@ public class LauncherAppWidgetHostView extends BaseLauncherAppWidgetHostView
 
     @Override
     public void updateAppWidget(RemoteViews remoteViews) {
+        // Modified by CyberHome: in-launcher custom widgets are drawn by local views, not RemoteViews
+        if (getAppWidgetInfo() instanceof LauncherAppWidgetProviderInfo lawpi && lawpi.isCustomWidget()) {
+            return;
+        }
         if (mTrackingWidgetUpdate && remoteViews != null) {
             Log.i(TAG, "App widget with id: " + getAppWidgetId() + " loaded");
             if (ATLEAST_Q) {

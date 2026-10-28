@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Equalizer frame 2 (music strip). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="20dp"
+    android:viewportWidth="25"
+    android:viewportHeight="20">
+    <path android:fillColor="#FFF28AAE" android:pathData="M1,4h3v16h-3z" />
+    <path android:fillColor="#FFF28AAE" android:pathData="M6,14h3v6h-3z" />
+    <path android:fillColor="#FFF28AAE" android:pathData="M11,2h3v18h-3z" />
+    <path android:fillColor="#FFF28AAE" android:pathData="M16,12h3v8h-3z" />
+    <path android:fillColor="#FFF28AAE" android:pathData="M21,6h3v14h-3z" />
+</vector>

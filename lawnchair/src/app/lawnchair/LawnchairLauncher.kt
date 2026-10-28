@@ -162,6 +162,8 @@ class LawnchairLauncher : QuickstepLauncher() {
         }
         layoutInflater.factory2 = LawnchairLayoutFactory(this)
         super.onCreate(savedInstanceState)
+        // Modified by CyberHome: first-run onboarding ("Apply Look")
+        com.techvrs.cyberhome.cyber.onboarding.CyberOnboarding.maybeShow(this)
 
         prefs.launcherTheme.subscribeChanges(this, ::updateTheme)
         prefs.feedProvider.subscribeChanges(this, defaultOverlay::reconnect)

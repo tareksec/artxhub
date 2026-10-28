@@ -87,7 +87,8 @@ fun PreferencesDashboard(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    SyncLiveInformation()
+    // Modified by CyberHome: no live-information / announcement download from lawnchair.app
+    // (privacy: CyberHome makes no network calls except the weather widget).
     val pref2 = preferenceManager2()
 
     PreferenceLayout(
@@ -97,8 +98,6 @@ fun PreferencesDashboard(
         backArrowVisible = false,
         actions = { PreferencesOverflowMenu(currentRoute = currentRoute, onNavigate = onNavigate) },
     ) {
-        AnnouncementPreference()
-
         if (BuildConfig.APPLICATION_ID.contains("nightly") || BuildConfig.DEBUG) {
             PreferencesDebugWarning()
             Spacer(modifier = Modifier.height(8.dp))
@@ -110,6 +109,15 @@ fun PreferencesDashboard(
         }
 
         PreferenceCategoryGroup {
+            // Modified by CyberHome: entry to CyberHome settings (look, widgets, about)
+            PreferenceCategory(
+                label = stringResource(R.string.cyber_settings_title),
+                description = stringResource(R.string.cyber_settings_entry_description),
+                iconResource = R.drawable.cyber_ic_settings,
+                onNavigate = { com.techvrs.cyberhome.cyber.settings.CyberSettingsActivity.open(context) },
+                isSelected = false,
+            )
+
             PreferenceCategory(
                 label = stringResource(R.string.general_label),
                 description = stringResource(R.string.general_description),
@@ -191,8 +199,9 @@ fun PreferencesDashboard(
                 label = stringResource(R.string.about_label),
                 description = "${context.getString(R.string.derived_app_name)} ${BuildConfig.MAJOR_VERSION}",
                 iconResource = R.drawable.ic_about,
-                onNavigate = { onNavigate(About) },
-                isSelected = currentRoute is About,
+                // Modified by CyberHome: our About screen (GPL notice, credits, no GitHub API calls)
+                onNavigate = { com.techvrs.cyberhome.cyber.settings.AboutActivity.open(context) },
+                isSelected = false,
             )
         }
     }

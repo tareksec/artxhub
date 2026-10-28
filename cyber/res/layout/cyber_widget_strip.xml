@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Shared 2x1 strip used by W8 Day counter and W9 Water reminder:
+     [icon] [big value] [title / caption] ............ [action icon] -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/cyber_widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/cyber_widget_inner_padding"
+        android:paddingEnd="4dp">
+
+        <ImageView
+            android:id="@+id/cyber_strip_icon"
+            android:layout_width="@dimen/cyber_widget_icon"
+            android:layout_height="@dimen/cyber_widget_icon"
+            android:layout_marginEnd="8dp"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/cyber_strip_value"
+            style="@style/Cyber.TextAppearance.Number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:maxLines="1"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cyber_strip_title"
+                style="@style/Cyber.TextAppearance.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/cyber_strip_caption"
+                style="@style/Cyber.TextAppearance.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textStyle="normal" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cyber_strip_action"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="@string/cyber_widget_edit"
+            android:padding="8dp"
+            android:src="@drawable/cyber_ic_edit" />
+    </LinearLayout>
+</FrameLayout>

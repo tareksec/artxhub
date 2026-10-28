@@ -431,6 +431,12 @@ public class LauncherWidgetHolder {
     public final AppWidgetHostView attachViewToHostAndGetAttachedView(
             @NonNull LauncherAppWidgetHostView view) {
 
+        // Modified by CyberHome: in-launcher custom widgets are not managed by AppWidgetHost
+        if (view.getAppWidgetInfo() instanceof LauncherAppWidgetProviderInfo lawpi
+                && lawpi.isCustomWidget()) {
+            return view;
+        }
+
         // Binder can also inflate placeholder widgets in case of backup-restore. Skip
         // attaching such widgets
         boolean isRealWidget = ((view instanceof PendingAppWidgetHostView pw)
@@ -438,7 +444,11 @@ public class LauncherWidgetHolder {
                 : true)
                 && view.getAppWidgetInfo() != null;
         if (isRealWidget && mViews.get(view.getAppWidgetId()) != view) {
+            Object tag = view.getTag();
             view = recycleExistingView(view);
+            if (view.getTag() == null) {
+                view.setTag(tag);
+            }
             mViews.put(view.getAppWidgetId(), view);
         }
         return view;

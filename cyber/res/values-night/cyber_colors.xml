@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- CyberHome design tokens: colors, dark "Night cafe" theme. Same names as values/cyber_colors.xml. -->
+<resources>
+    <color name="cyber_bg">#FF1C1B24</color>
+    <color name="cyber_surface">#FF26252F</color>
+    <color name="cyber_border">#FF34323F</color>
+
+    <color name="cyber_text">#FFF4EEF6</color>
+    <color name="cyber_text_dim">#FFA39DB0</color>
+    <color name="cyber_on_accent">#FF1C1B24</color>
+
+    <color name="cyber_accent_blue">#FF9DB8FF</color>
+    <color name="cyber_soft_blue">#FF6F8DE8</color>
+    <color name="cyber_tint_blue">#FF2A3350</color>
+
+    <color name="cyber_accent_pink">#FFF7A3C2</color>
+    <color name="cyber_soft_pink">#FFE07FA6</color>
+    <color name="cyber_tint_pink">#FF4A2A3A</color>
+
+    <color name="cyber_accent_teal">#FF8FD8C8</color>
+    <color name="cyber_soft_teal">#FF4FB3A0</color>
+    <color name="cyber_tint_teal">#FF203A35</color>
+
+    <color name="cyber_accent_peach">#FFF2C278</color>
+    <color name="cyber_soft_peach">#FFD9A050</color>
+    <color name="cyber_tint_peach">#FF3A3226</color>
+</resources>

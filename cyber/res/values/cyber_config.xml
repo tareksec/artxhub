@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
-<!-- Overrides of upstream config values (lawnchair/res/values/config.xml). -->
+<!-- Overrides of upstream config values (lawnchair/res/values/config.xml).
+     Drawer and folder colors stay upstream defaults, so they follow the launcher's light/dark theme. -->
 <resources>
-    <!-- Default accent: CyberHome highlight cyan (cyber_accent_cyan). Format parsed by ColorOption. -->
-    <string name="config_default_accent_color" translatable="false">custom|#ff36d1dc</string>
-    <!-- App drawer background: cyber_bg. Folder background: cyber_surface. -->
-    <string name="config_default_app_drawer_bg_color" translatable="false">custom|#ff0b0c0f</string>
-    <string name="config_default_folder_color" translatable="false">custom|#ff15171c</string>
+    <!-- Default accent: CyberHome pink (cyber_soft_pink, readable in light and dark). Format parsed by ColorOption. -->
+    <string name="config_default_accent_color" translatable="false">custom|#fff28aae</string>
+    <!-- "At a Glance" would take the top row of page 1 that our layout uses; off by default. -->
+    <bool name="config_default_enable_smartspace">false</bool>
+    <!-- Soft rounded icons that match the board's 18dp cards. -->
+    <string name="config_default_icon_shape" translatable="false">squircle</string>
 </resources>

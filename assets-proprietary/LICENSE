@@ -1,0 +1,10 @@
+CyberHome art assets
+Copyright (c) 2026 the CyberHome owner. All rights reserved.
+
+The images in this folder (characters/, wallpapers/) and their resized copies bundled in the app
+(cyber/res/drawable-nodpi/cyber_char_*.png, cyber/res/drawable-nodpi/cyber_wall_*.jpg) were made
+by the owner. They are NOT covered by the GPL-3.0-or-later license of the source code (COPYING)
+or by the Apache 2.0 license of Lawnchair/Launcher3.
+
+You may not copy, modify, redistribute or use them outside of unmodified CyberHome builds
+without written permission from the owner. Forks must replace them with their own art.

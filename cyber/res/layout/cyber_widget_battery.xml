@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- W4 Battery strip: lightning icon + 10 rounded segments + percentage. Colors from code. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cyber_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/cyber_widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/cyber_widget_inner_padding">
+
+        <ImageView
+            android:id="@+id/cyber_battery_icon"
+            android:layout_width="@dimen/cyber_widget_icon"
+            android:layout_height="@dimen/cyber_widget_icon"
+            android:importantForAccessibility="no"
+            android:src="@drawable/cyber_ic_bolt" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView android:id="@+id/cyber_battery_seg0" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg1" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg2" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg3" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg4" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg5" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg6" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg7" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg8" style="@style/Cyber.Widget.BatterySegment" />
+            <ImageView android:id="@+id/cyber_battery_seg9" style="@style/Cyber.Widget.BatterySegment" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/cyber_battery_percent"
+            style="@style/Cyber.TextAppearance.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>
