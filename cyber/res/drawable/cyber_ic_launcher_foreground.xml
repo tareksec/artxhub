@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- CyberHome placeholder launcher icon: HUD corner brackets around a house chevron.
      Kept inside the 66dp adaptive-icon safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"

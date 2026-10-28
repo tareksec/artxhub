@@ -26,5 +26,7 @@ win the resource merge, so these files replace upstream resources of the same na
 ## After every upstream merge
 
 1. `./gradlew cyberRebrandStrings` — regenerates the string overrides (new/changed strings).
+   Run it on its own, not in the same command as an `assemble*` task (Gradle rejects that
+   because it writes into a resource source folder).
 2. Grep for new user-visible "Lawnchair" text in Kotlin/XML and new `ic_launcher_home*` resources.
 3. Re-check this table.

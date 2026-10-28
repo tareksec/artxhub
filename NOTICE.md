@@ -7,9 +7,18 @@
 - Launcher3 — Copyright (c) The Android Open Source Project (AOSP)
   https://android.googlesource.com/platform/packages/apps/Launcher3
 
-Lawnchair and Launcher3 are licensed under the Apache License, Version 2.0.
-The full license text is in [`LICENSE.txt`](LICENSE.txt). All upstream copyright
-headers are kept unchanged.
+## Licensing
+
+- **Upstream code** (Lawnchair, Launcher3) is licensed under the Apache License,
+  Version 2.0 — see [`LICENSE.txt`](LICENSE.txt). All upstream copyright headers are kept
+  unchanged, and that code stays available under Apache 2.0.
+- **CyberHome's own code and changes** are licensed under the GNU General Public License,
+  version 3 or (at your option) any later version — see [`COPYING`](COPYING). Our files carry
+  `SPDX-License-Identifier: GPL-3.0-or-later`.
+- **CyberHome as a whole** (the combined work, including the APK we distribute) is therefore
+  distributed under GPL-3.0-or-later. Apache 2.0 code can be included in a GPLv3 work.
+- Our own art/brand assets (once added) are not covered by the GPL; they live in
+  `assets-proprietary/` with their own license.
 
 ## Our changes
 

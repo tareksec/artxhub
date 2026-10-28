@@ -29,9 +29,9 @@ Changed:
   `github.repository_owner == 'LawnchairLauncher'` and are skipped on our fork.
 
 Known issues / left for later:
-- **License:** upstream `15-dev` is **Apache 2.0**, not GPL v3 as CLAUDE.md assumed. Needs a
-  decision on the license for our own additions (GPL v3 is still possible: Apache 2.0 code can
-  be combined into a GPLv3 work).
+- **License:** upstream `15-dev` is **Apache 2.0**, not GPL v3 as CLAUDE.md assumed.
+  Decision (2026-10-28): keep GPL v3 for our own code and the combined app
+  (GPL-3.0-or-later, text in `COPYING`); upstream `LICENSE.txt` stays. See `NOTICE.md`.
 - About screen still shows Lawnchair links/contributors and fetches data from the GitHub API
   (network call, conflicts with privacy rule 6) → replace in Task 10.
 - `search_provider_sponsored_description` intentionally not rebranded (it claims a revenue
