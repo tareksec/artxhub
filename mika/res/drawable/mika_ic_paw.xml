@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Main paw pad -->
+    <path
+        android:fillColor="@color/mika_text_title"
+        android:pathData="M12,11.5 C9.5,11.5 7.8,13.5 8,16.2 C8.2,18.8 10,20.5 12,20.5 C14,20.5 15.8,18.8 16,16.2 C16.2,13.5 14.5,11.5 12,11.5 Z" />
+    <!-- 4 toe beans -->
+    <path
+        android:fillColor="@color/mika_text_title"
+        android:pathData="M5,10 C6,10 6.8,8.8 6.8,7.5 C6.8,6.2 6,5 5,5 C4,5 3.2,6.2 3.2,7.5 C3.2,8.8 4,10 5,10 Z" />
+    <path
+        android:fillColor="@color/mika_text_title"
+        android:pathData="M9.5,6.5 C10.5,6.5 11.2,5.2 11.2,4 C11.2,2.8 10.5,1.8 9.5,1.8 C8.5,1.8 7.8,2.8 7.8,4 C7.8,5.2 8.5,6.5 9.5,6.5 Z" />
+    <path
+        android:fillColor="@color/mika_text_title"
+        android:pathData="M14.5,6.5 C15.5,6.5 16.2,5.2 16.2,4 C16.2,2.8 15.5,1.8 14.5,1.8 C13.5,1.8 12.8,2.8 12.8,4 C12.8,5.2 13.5,6.5 14.5,6.5 Z" />
+    <path
+        android:fillColor="@color/mika_text_title"
+        android:pathData="M19,10 C20,10 20.8,8.8 20.8,7.5 C20.8,6.2 20,5 19,5 C18,5 17.2,6.2 17.2,7.5 C17.2,8.8 18,10 19,10 Z" />
+</vector>

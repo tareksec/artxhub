@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Mika Cozy Cat Theme - Color Palette -->
+<resources>
+    <!-- Backgrounds & Surfaces -->
+    <color name="mika_bg">#FFFBF6EF</color>
+    <color name="mika_surface">#FFFFFDF9</color>
+    <color name="mika_surface_card">#FFF7EFE5</color>
+    <color name="mika_surface_translucent">#E6FFFDF9</color>
+    <color name="mika_dock_bg">#D9FBF4EB</color>
+    <color name="mika_border">#FFEEDDCB</color>
+
+    <!-- Typography (Warm Mocha Browns) -->
+    <color name="mika_text_title">#FF4A3728</color>
+    <color name="mika_text_body">#FF6D5545</color>
+    <color name="mika_text_dim">#FFA38E7F</color>
+    <color name="mika_text_light">#FFC7B5A7</color>
+
+    <!-- Accents -->
+    <color name="mika_pink">#FFF4A3B4</color>
+    <color name="mika_pink_soft">#FFFDEFF2</color>
+    <color name="mika_pink_badge">#FFF8CAD2</color>
+
+    <color name="mika_mint">#FF9FD5A6</color>
+    <color name="mika_mint_soft">#FFEAF7EC</color>
+
+    <color name="mika_peach">#FFF6CE8B</color>
+    <color name="mika_peach_soft">#FFFFF7E8</color>
+
+    <color name="mika_coral">#FFF28B8B</color>
+    <color name="mika_coral_soft">#FFFEEEEE</color>
+
+    <color name="mika_blue">#FF75A2D3</color>
+    <color name="mika_blue_soft">#FFECF3FA</color>
+
+    <color name="mika_charcoal">#FF3A3A40</color>
+</resources>
