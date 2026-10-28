@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Overrides of upstream config values (lawnchair/res/values/config.xml). -->
+<resources>
+    <!-- Default accent: CyberHome highlight cyan (cyber_accent_cyan). Format parsed by ColorOption. -->
+    <string name="config_default_accent_color" translatable="false">custom|#ff36d1dc</string>
+    <!-- App drawer background: cyber_bg. Folder background: cyber_surface. -->
+    <string name="config_default_app_drawer_bg_color" translatable="false">custom|#ff0b0c0f</string>
+    <string name="config_default_folder_color" translatable="false">custom|#ff15171c</string>
+</resources>

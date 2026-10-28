@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- CyberHome design tokens: colors (PROJECT_SPEC.md section 2). -->
+<resources>
+    <color name="cyber_bg">#FF0B0C0F</color>
+    <!-- Dot grid on the background: ~6% white -->
+    <color name="cyber_bg_dot">#0FFFFFFF</color>
+    <color name="cyber_surface">#FF15171C</color>
+    <color name="cyber_border">#FF2A2D35</color>
+
+    <color name="cyber_accent_blue">#FF2F6BFF</color>
+    <color name="cyber_accent_pink">#FFFF6FA8</color>
+    <color name="cyber_accent_teal">#FF3DDBD0</color>
+    <color name="cyber_accent_cyan">#FF36D1DC</color>
+
+    <color name="cyber_text">#FFFFFFFF</color>
+    <color name="cyber_text_dim">#FF8A8F9C</color>
+</resources>

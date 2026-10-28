@@ -10,6 +10,7 @@ Every file from Lawnchair (`15-dev`) that we edited. Keep each edit small and ma
 | `build.gradle` | APK file name prefix `Lawnchair.` → `CyberHome.` | 1 |
 | `build.gradle` | `apply from: 'cyber/cyber.gradle'` + modification notice at top | 1 |
 | `lawnchair/src/app/lawnchair/backup/LawnchairBackup.kt` | Backup file name `Lawnchair_Backup` → `CyberHome_Backup` | 1 |
+| `lawnchair/src/app/lawnchair/preferences/PreferenceManager.kt` | Default `pref_launcherTheme` `"system"` → `"dark"` | 2 |
 
 ## Overrides without editing upstream files
 
@@ -22,6 +23,10 @@ win the resource merge, so these files replace upstream resources of the same na
 | `cyber/res/mipmap-anydpi-v26/ic_launcher_home*.xml` | `res/mipmap-anydpi-v26/ic_launcher_home*.xml` |
 | `cyber/res/drawable/ic_launcher_home_comp.xml` | `lawnchair/res/drawable/ic_launcher_home_comp.png` (About logo) |
 | `cyber/res/values*/cyber_rebrand_strings.xml` | Strings in `lawnchair/res/values*/strings.xml` that say "Lawnchair" |
+| `cyber/res/values/cyber_config.xml` | `config_default_accent_color` (cyan), `config_default_app_drawer_bg_color`, `config_default_folder_color` in `lawnchair/res/values/config.xml` |
+
+`cyber.gradle` also adds `cyber/src` (our Kotlin code) to every build type, and
+`cyber/debug/src` + `cyber/debug/AndroidManifest.xml` to the debug build only.
 
 ## After every upstream merge
 

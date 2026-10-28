@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Display family for big digits and titles: Orbitron (SIL OFL 1.1, docs/licenses/OFL-Orbitron.txt). -->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/cyber_orbitron_bold"
+        android:fontStyle="normal"
+        android:fontWeight="700" />
+    <font
+        android:font="@font/cyber_orbitron_black"
+        android:fontStyle="normal"
+        android:fontWeight="900" />
+</font-family>

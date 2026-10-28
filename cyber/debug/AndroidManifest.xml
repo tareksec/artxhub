@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- Debug-only components of CyberHome. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Design token test screen; shows up in the app drawer as "CyberHome Design". -->
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.design.CyberDesignPreviewActivity"
+            android:exported="true"
+            android:label="CyberHome Design"
+            android:taskAffinity="${applicationId}.design"
+            android:theme="@android:style/Theme.Material.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
