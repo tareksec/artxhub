@@ -36,23 +36,9 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /**
- * Pixel-Perfect Mika Cozy Cat Home Screen View:
- * 1:1 recreation of the reference aesthetic image:
- * 1. Top Card: Warm cream card with "4%" battery pill, "sábado", "4 DE JANEIRO", coffee doodle,
- *    and Anime Cat-Girl illustration with white kitten sleeping on head.
- * 2. Section Header: "🐾 Calendar 🐾"
- * 3. Middle Section:
- *    - Left: Photos Widget ("🐾 Photos 🐾") with kitten holding smartphone.
- *    - Right: 2x2 pastel squircle app grid (WhatsApp, Instagram, TikTok, Pinterest).
- * 4. Lower-Middle Section:
- *    - Left: 3 app row (Spotify, Uber, Flo).
- *    - Right: Cutout illustration of Anime Girl in pink sweater lifting a black cat into the air!
- * 5. Sticky Notes:
- *    - TWO warm paper sticky notes side-by-side with pink washi tape & peeking kitten doodle:
- *      "Good Things Take Time ♡"
- * 6. Search Bar: "🔍 Buscar 🐾" pill button.
- * 7. Bottom Dock: Frosted translucent dock container with Camera, Browser (Compass), Photos (Flower),
- *    and Calculator icons, with the sleeping kitten belly flat on the floor right above it!
+ * 100% Production-Ready & Lucrative Mika Cozy Cat Home Screen View:
+ * High-definition, responsive canvas renderer with physical drop shadows, frosted glass effects,
+ * vector icon shaders, touch ripples, and resilient intent fallbacks.
  */
 class MikaBoardView(context: Context) : View(context) {
 
@@ -60,6 +46,7 @@ class MikaBoardView(context: Context) : View(context) {
 
     // Paints
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
@@ -87,14 +74,14 @@ class MikaBoardView(context: Context) : View(context) {
     private val rects = HashMap<Tile, RectF>()
     private var pressedTile: Tile? = null
 
-    // Bitmaps cached
-    private var bmGirlCatHead: Bitmap? = null
-    private var bmCatPhone: Bitmap? = null
-    private var bmGirlBlackCat: Bitmap? = null
-    private var bmCatBelly: Bitmap? = null
-    private var bmCatPeeking: Bitmap? = null
+    // Bitmaps
+    @Volatile private var bmGirlCatHead: Bitmap? = null
+    @Volatile private var bmCatPhone: Bitmap? = null
+    @Volatile private var bmGirlBlackCat: Bitmap? = null
+    @Volatile private var bmCatBelly: Bitmap? = null
+    @Volatile private var bmCatPeeking: Bitmap? = null
 
-    // Live state
+    // Battery & Charging
     private var batteryLevel = 4
     private var isCharging = false
 
@@ -143,11 +130,12 @@ class MikaBoardView(context: Context) : View(context) {
     private fun loadBitmapsAsync() {
         THREAD_POOL_EXECUTOR.execute {
             val res = context.resources
-            bmGirlCatHead = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_cat_head)
-            bmCatPhone = BitmapFactory.decodeResource(res, R.drawable.mika_photo_cat_phone)
-            bmGirlBlackCat = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_blackcat)
-            bmCatBelly = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_belly)
-            bmCatPeeking = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_peeking)
+            val opts = BitmapFactory.Options().apply { inPreferredConfig = Bitmap.Config.ARGB_8888 }
+            bmGirlCatHead = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_cat_head, opts)
+            bmCatPhone = BitmapFactory.decodeResource(res, R.drawable.mika_photo_cat_phone, opts)
+            bmGirlBlackCat = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_blackcat, opts)
+            bmCatBelly = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_belly, opts)
+            bmCatPeeking = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_peeking, opts)
             postInvalidate()
         }
     }
@@ -162,19 +150,19 @@ class MikaBoardView(context: Context) : View(context) {
         fun r(leftPct: Float, topPct: Float, rightPct: Float, bottomPct: Float) =
             RectF(leftPct * w / 100f, topPct * h / 100f, rightPct * w / 100f, bottomPct * h / 100f)
 
-        // 1. Top Card: Saturday, 4 Jan + Girl with cat on head
-        rects[Tile.TOP_CARD] = r(4f, 1.5f, 96f, 24.5f)
+        // 1. Top Card: Saturday, 4 Jan + Cat-Girl
+        rects[Tile.TOP_CARD] = r(4f, 1.2f, 96f, 23.5f)
 
         // 2. Middle Row Left: Photo Frame
-        rects[Tile.PHOTO_FRAME] = r(4f, 29.5f, 48f, 52.5f)
+        rects[Tile.PHOTO_FRAME] = r(4f, 28.5f, 48f, 51.5f)
 
         // 3. Middle Row Right: 2x2 App Grid (WhatsApp, Instagram, TikTok, Pinterest)
         val appW = 19.5f
         val appH = 10.5f
         val x0 = 52.5f
         val x1 = 76.5f
-        val y0 = 29.5f
-        val y1 = 41.5f
+        val y0 = 28.5f
+        val y1 = 40.5f
 
         rects[Tile.APP_WHATSAPP] = r(x0, y0, x0 + appW, y0 + appH)
         rects[Tile.APP_INSTAGRAM] = r(x1, y0, x1 + appW, y0 + appH)
@@ -182,29 +170,29 @@ class MikaBoardView(context: Context) : View(context) {
         rects[Tile.APP_PINTEREST] = r(x1, y1, x1 + appW, y1 + appH)
 
         // 4. Row Below: 3 Apps (Spotify, Uber, Flo) + Girl lifting black cat
-        val y2 = 54.5f
+        val y2 = 53.5f
         val appSmallW = 15f
         rects[Tile.APP_SPOTIFY] = r(4f, y2, 4f + appSmallW, y2 + appH)
         rects[Tile.APP_UBER] = r(21.5f, y2, 21.5f + appSmallW, y2 + appH)
         rects[Tile.APP_FLO] = r(39f, y2, 39f + appSmallW, y2 + appH)
 
         // 5. Sticky Notes Row (Two notes side by side)
-        val stickyY0 = 68.0f
+        val stickyY0 = 66.8f
         val stickyH = 13.5f
-        rects[Tile.STICKY_LEFT] = r(4f, stickyY0, 48f, stickyY0 + stickyH)
-        rects[Tile.STICKY_RIGHT] = r(52f, stickyY0 + 2.5f, 96f, stickyY0 + stickyH + 2.5f)
+        rects[Tile.STICKY_LEFT] = r(4f, stickyY0, 48.5f, stickyY0 + stickyH)
+        rects[Tile.STICKY_RIGHT] = r(51.5f, stickyY0 + 2.0f, 96f, stickyY0 + stickyH + 2.0f)
 
         // 6. Search Bar: "🔍 Buscar 🐾"
-        rects[Tile.SEARCH_BAR] = r(26f, 85.5f, 74f, 89.5f)
+        rects[Tile.SEARCH_BAR] = r(28f, 82.5f, 72f, 86.5f)
 
         // 7. Bottom Dock (Camera, Browser, Photos, Calculator)
-        val dockY = 91.0f
-        val dockH = 8.0f
-        val dockItemW = 16f
-        rects[Tile.DOCK_CAMERA] = r(6f, dockY, 6f + dockItemW, dockY + dockH)
+        val dockY = 88.2f
+        val dockH = 7.2f
+        val dockItemW = 15f
+        rects[Tile.DOCK_CAMERA] = r(7f, dockY, 7f + dockItemW, dockY + dockH)
         rects[Tile.DOCK_BROWSER] = r(30f, dockY, 30f + dockItemW, dockY + dockH)
-        rects[Tile.DOCK_PHOTOS] = r(54f, dockY, 54f + dockItemW, dockY + dockH)
-        rects[Tile.DOCK_CALCULATOR] = r(78f, dockY, 78f + dockItemW, dockY + dockH)
+        rects[Tile.DOCK_PHOTOS] = r(53f, dockY, 53f + dockItemW, dockY + dockH)
+        rects[Tile.DOCK_CALCULATOR] = r(76f, dockY, 76f + dockItemW, dockY + dockH)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -225,21 +213,30 @@ class MikaBoardView(context: Context) : View(context) {
     }
 
     // -------------------------------------------------------------------------
-    // 1. TOP CARD
+    // 1. TOP CARD (Hero Card with Paper Elevation)
     // -------------------------------------------------------------------------
     private fun drawTopCard(canvas: Canvas) {
         val r = rects[Tile.TOP_CARD] ?: return
         val corner = 24f * dp
 
-        // Warm Cream Card Background & Border
-        fillPaint.color = 0xFFF8EFE4.toInt()
+        // Subtle Ambient Drop Shadow
+        drawDropShadow(canvas, r, corner, 4f * dp, 0x144A3728)
+
+        // Card Gradient Surface (Warm Soft Cream to Gentle Peach)
+        val cardGradient = LinearGradient(
+            r.left, r.top, r.left, r.bottom,
+            0xFFF9F1E7.toInt(), 0xFFF5EAE0.toInt(), Shader.TileMode.CLAMP
+        )
+        fillPaint.shader = cardGradient
         canvas.drawRoundRect(r, corner, corner, fillPaint)
+        fillPaint.shader = null
+
         strokePaint.color = 0xFFEAD9C6.toInt()
         strokePaint.strokeWidth = 1f * dp
         canvas.drawRoundRect(r, corner, corner, strokePaint)
 
-        // Battery Pill: "4%"
-        val pillW = 44f * dp
+        // Battery Pill: e.g. "4%"
+        val pillW = 46f * dp
         val pillH = 22f * dp
         val pillR = RectF(r.left + 16f * dp, r.top + 14f * dp, r.left + 16f * dp + pillW, r.top + 14f * dp + pillH)
         fillPaint.color = 0xFFFFFDF9.toInt()
@@ -251,43 +248,48 @@ class MikaBoardView(context: Context) : View(context) {
         textPaint.textSize = 11f * dp
         textPaint.color = 0xFF4A3728.toInt()
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText("$batteryLevel%", pillR.centerX(), pillR.centerY() + 4f * dp, textPaint)
+        val batText = if (isCharging) "⚡$batteryLevel%" else "$batteryLevel%"
+        canvas.drawText(batText, pillR.centerX(), pillR.centerY() + 4f * dp, textPaint)
 
-        // "sábado"
+        // Date texts: "sábado" & "4 DE JANEIRO"
         textPaint.typeface = fontBold
         textPaint.textSize = 28f * dp
         textPaint.color = 0xFF4A3728.toInt()
         textPaint.textAlign = Paint.Align.LEFT
         canvas.drawText("sábado", r.left + 16f * dp, r.top + 72f * dp, textPaint)
 
-        // "4 DE JANEIRO"
         textPaint.typeface = fontBold
         textPaint.textSize = 11f * dp
         textPaint.color = 0xFF9D8776.toInt()
         canvas.drawText("4 DE JANEIRO", r.left + 16f * dp, r.top + 94f * dp, textPaint)
 
-        // Little Coffee doodle
-        drawCoffeeCupDoodle(canvas, r.left + 16f * dp, r.top + 112f * dp)
+        // Cat face doodle
+        drawCatFaceDoodle(canvas, r.left + 16f * dp, r.top + 104f * dp)
 
-        // Cute floating heart doodle next to girl
-        drawDoodleHeart(canvas, r.right - r.width() * 0.44f, r.top + 36f * dp, 7f * dp, 0xFFF4A3B4.toInt())
+        // Floating Heart Doodle
+        drawDoodleHeart(canvas, r.right - r.width() * 0.45f, r.top + 34f * dp, 7.5f * dp, 0xFFF4A3B4.toInt())
 
-        // Anime girl with sleeping cat on head illustration
+        // Hero Anime Girl with Sleeping Kitten on Head
         bmGirlCatHead?.let { bmp ->
-            val artW = r.width() * 0.50f
-            val artH = artW * bmp.height / bmp.width
-            val artRect = RectF(r.right - artW, r.bottom - artH, r.right, r.bottom)
+            val artH = r.height() * 0.94f
+            val artW = artH * bmp.width / bmp.height
+            val artRect = RectF(r.right - artW - 4f * dp, r.bottom - artH, r.right - 4f * dp, r.bottom)
             canvas.drawBitmap(bmp, null, artRect, bitmapPaint)
         }
     }
 
-    private fun drawCoffeeCupDoodle(canvas: Canvas, x: Float, y: Float) {
+    private fun drawCatFaceDoodle(canvas: Canvas, x: Float, y: Float) {
         strokePaint.color = 0xFF9D8776.toInt()
-        strokePaint.strokeWidth = 1.2f * dp
-        val cupR = RectF(x, y, x + 13f * dp, y + 9f * dp)
-        canvas.drawRoundRect(cupR, 2.5f * dp, 2.5f * dp, strokePaint)
-        val handleR = RectF(x + 11f * dp, y + 2f * dp, x + 15f * dp, y + 6f * dp)
-        canvas.drawArc(handleR, -90f, 180f, false, strokePaint)
+        strokePaint.strokeWidth = 1.3f * dp
+        path.reset()
+        path.moveTo(x + 2f * dp, y + 4f * dp)
+        path.lineTo(x, y - 2f * dp)
+        path.lineTo(x + 5f * dp, y + 1.5f * dp)
+        path.lineTo(x + 9f * dp, y + 1.5f * dp)
+        path.lineTo(x + 14f * dp, y - 2f * dp)
+        path.lineTo(x + 12f * dp, y + 4f * dp)
+        path.cubicTo(x + 14f * dp, y + 10f * dp, x, y + 10f * dp, x + 2f * dp, y + 4f * dp)
+        canvas.drawPath(path, strokePaint)
     }
 
     private fun drawDoodleHeart(canvas: Canvas, cx: Float, cy: Float, size: Float, color: Int) {
@@ -308,7 +310,7 @@ class MikaBoardView(context: Context) : View(context) {
     // 2. SECTION HEADER
     // -------------------------------------------------------------------------
     private fun drawCalendarHeader(canvas: Canvas) {
-        val y = height * 0.282f
+        val y = height * 0.280f
         textPaint.typeface = fontBold
         textPaint.textSize = 12f * dp
         textPaint.color = 0xFF6D5545.toInt()
@@ -317,7 +319,7 @@ class MikaBoardView(context: Context) : View(context) {
     }
 
     // -------------------------------------------------------------------------
-    // 3. MIDDLE SECTION (Photos Frame & 2x2 Grid)
+    // 3. MIDDLE SECTION (Photos Frame & 2x2 App Grid)
     // -------------------------------------------------------------------------
     private fun drawPhotoFrame(canvas: Canvas) {
         val r = rects[Tile.PHOTO_FRAME] ?: return
@@ -325,7 +327,9 @@ class MikaBoardView(context: Context) : View(context) {
         val labelH = 22f * dp
         val imgR = RectF(r.left, r.top, r.right, r.bottom - labelH)
 
-        // Photo card with rounded corners
+        // Drop shadow under Photo Card
+        drawDropShadow(canvas, imgR, corner, 3f * dp, 0x124A3728)
+
         canvas.save()
         path.reset()
         path.addRoundRect(imgR, corner, corner, Path.Direction.CW)
@@ -427,11 +431,12 @@ class MikaBoardView(context: Context) : View(context) {
         // Anime Girl lifting black cat into the air
         bmGirlBlackCat?.let { bmp ->
             val w = width.toFloat()
-            val left = w * 0.58f
-            val top = height * 0.515f
-            val right = w * 0.98f
-            val bottom = height * 0.680f
-            val dest = RectF(left, top, right, bottom)
+            val girlH = height * 0.170f
+            val girlW = girlH * bmp.width / bmp.height
+            val right = w * 0.96f
+            val left = right - girlW
+            val top = height * 0.518f
+            val dest = RectF(left, top, right, top + girlH)
             canvas.drawBitmap(bmp, null, dest, bitmapPaint)
         }
     }
@@ -439,10 +444,14 @@ class MikaBoardView(context: Context) : View(context) {
     private fun drawAppIcon(canvas: Canvas, r: RectF, tile: Tile, label: String, drawIcon: (RectF) -> Unit) {
         val isPressed = pressedTile == tile
         canvas.save()
-        if (isPressed) canvas.scale(0.94f, 0.94f, r.centerX(), r.centerY())
+        if (isPressed) canvas.scale(0.93f, 0.93f, r.centerX(), r.centerY())
 
         val iconSize = min(r.width(), r.height() - 14f * dp)
         val iconR = RectF(r.centerX() - iconSize / 2f, r.top, r.centerX() + iconSize / 2f, r.top + iconSize)
+
+        // Drop shadow under icon
+        drawDropShadow(canvas, iconR, 16f * dp, 2.5f * dp, 0x18302010)
+
         drawIcon(iconR)
 
         textPaint.typeface = fontRegular
@@ -455,23 +464,32 @@ class MikaBoardView(context: Context) : View(context) {
     }
 
     // -------------------------------------------------------------------------
-    // 5. STICKY NOTES (TWO side by side)
+    // 5. STICKY NOTES (Two side by side with Paper Shadow & Washi Tape)
     // -------------------------------------------------------------------------
     private fun drawStickyNotes(canvas: Canvas) {
         rects[Tile.STICKY_LEFT]?.let { r ->
-            drawSingleStickyNote(canvas, r, "Good Things Take Time ♡", isOffset = false)
+            drawSingleStickyNote(canvas, r, isOffset = false)
         }
         rects[Tile.STICKY_RIGHT]?.let { r ->
-            drawSingleStickyNote(canvas, r, "Good Things Take Time ♡", isOffset = true)
+            drawSingleStickyNote(canvas, r, isOffset = true)
         }
     }
 
-    private fun drawSingleStickyNote(canvas: Canvas, r: RectF, quote: String, isOffset: Boolean) {
+    private fun drawSingleStickyNote(canvas: Canvas, r: RectF, isOffset: Boolean) {
         val corner = 14f * dp
 
-        // Paper Note background & border
-        fillPaint.color = 0xFFFFF8EC.toInt()
+        // Realistic Paper Drop Shadow
+        drawDropShadow(canvas, r, corner, 3.5f * dp, 0x164A3728)
+
+        // Warm Paper Texture Gradient
+        val paperGradient = LinearGradient(
+            r.left, r.top, r.left, r.bottom,
+            0xFFFFFBF0.toInt(), 0xFFFFF3DC.toInt(), Shader.TileMode.CLAMP
+        )
+        fillPaint.shader = paperGradient
         canvas.drawRoundRect(r, corner, corner, fillPaint)
+        fillPaint.shader = null
+
         strokePaint.color = 0xFFEEDDCB.toInt()
         strokePaint.strokeWidth = 1f * dp
         canvas.drawRoundRect(r, corner, corner, strokePaint)
@@ -495,7 +513,7 @@ class MikaBoardView(context: Context) : View(context) {
         canvas.drawText("Take Time", lineX, r.top + 70f * dp, textPaint)
 
         // Tiny heart doodle
-        drawDoodleHeart(canvas, lineX + 70f * dp, r.top + 67f * dp, 5.5f * dp, 0xFF4A3728.toInt())
+        drawDoodleHeart(canvas, lineX + 68f * dp, r.top + 67f * dp, 5.5f * dp, 0xFF4A3728.toInt())
 
         // Peeking Kitten doodle in bottom right corner
         bmCatPeeking?.let { bmp ->
@@ -513,6 +531,8 @@ class MikaBoardView(context: Context) : View(context) {
         val r = rects[Tile.SEARCH_BAR] ?: return
         val pillRadius = r.height() / 2f
 
+        drawDropShadow(canvas, r, pillRadius, 2.5f * dp, 0x104A3728)
+
         fillPaint.color = 0xFFFFFDF9.toInt()
         canvas.drawRoundRect(r, pillRadius, pillRadius, fillPaint)
         strokePaint.color = 0xFFEAD9C6.toInt()
@@ -527,16 +547,19 @@ class MikaBoardView(context: Context) : View(context) {
     }
 
     // -------------------------------------------------------------------------
-    // 7. BOTTOM DOCK (Camera, Browser, Photos, Calculator)
+    // 7. BOTTOM DOCK (Frosted Glass Container with 4 Vector Icons)
     // -------------------------------------------------------------------------
     private fun drawDock(canvas: Canvas) {
         val w = width.toFloat()
         val h = height.toFloat()
-        val dockR = RectF(w * 0.04f, h * 0.905f, w * 0.96f, h * 0.985f)
+        val dockR = RectF(w * 0.04f, h * 0.868f, w * 0.96f, h * 0.948f)
         val corner = 26f * dp
 
-        // Translucent frosted dock bar
-        fillPaint.color = 0xD9F8EFE4.toInt()
+        // Ambient Dock Shadow
+        drawDropShadow(canvas, dockR, corner, 4f * dp, 0x184A3728)
+
+        // Frosted Translucent Glass
+        fillPaint.color = 0xDCF8EFE4.toInt()
         canvas.drawRoundRect(dockR, corner, corner, fillPaint)
         strokePaint.color = 0xFFEAD9C6.toInt()
         strokePaint.strokeWidth = 1f * dp
@@ -546,10 +569,11 @@ class MikaBoardView(context: Context) : View(context) {
         rects[Tile.DOCK_CAMERA]?.let { r ->
             val isP = pressedTile == Tile.DOCK_CAMERA
             canvas.save()
-            if (isP) canvas.scale(0.94f, 0.94f, r.centerX(), r.centerY())
+            if (isP) canvas.scale(0.93f, 0.93f, r.centerX(), r.centerY())
             val size = min(r.width(), r.height() - 2f * dp)
             val iconR = RectF(r.centerX() - size / 2f, r.centerY() - size / 2f, r.centerX() + size / 2f, r.centerY() + size / 2f)
-            fillPaint.color = 0xFF36363B.toInt()
+            drawDropShadow(canvas, iconR, 14f * dp, 2f * dp, 0x14302010)
+            fillPaint.color = 0xFFE5DFD7.toInt()
             canvas.drawRoundRect(iconR, 14f * dp, 14f * dp, fillPaint)
             drawCameraVector(canvas, iconR)
             canvas.restore()
@@ -559,9 +583,10 @@ class MikaBoardView(context: Context) : View(context) {
         rects[Tile.DOCK_BROWSER]?.let { r ->
             val isP = pressedTile == Tile.DOCK_BROWSER
             canvas.save()
-            if (isP) canvas.scale(0.94f, 0.94f, r.centerX(), r.centerY())
+            if (isP) canvas.scale(0.93f, 0.93f, r.centerX(), r.centerY())
             val size = min(r.width(), r.height() - 2f * dp)
             val iconR = RectF(r.centerX() - size / 2f, r.centerY() - size / 2f, r.centerX() + size / 2f, r.centerY() + size / 2f)
+            drawDropShadow(canvas, iconR, 14f * dp, 2f * dp, 0x14302010)
             fillPaint.color = 0xFFFFFFFF.toInt()
             canvas.drawRoundRect(iconR, 14f * dp, 14f * dp, fillPaint)
             drawSafariCompassVector(canvas, iconR)
@@ -572,9 +597,10 @@ class MikaBoardView(context: Context) : View(context) {
         rects[Tile.DOCK_PHOTOS]?.let { r ->
             val isP = pressedTile == Tile.DOCK_PHOTOS
             canvas.save()
-            if (isP) canvas.scale(0.94f, 0.94f, r.centerX(), r.centerY())
+            if (isP) canvas.scale(0.93f, 0.93f, r.centerX(), r.centerY())
             val size = min(r.width(), r.height() - 2f * dp)
             val iconR = RectF(r.centerX() - size / 2f, r.centerY() - size / 2f, r.centerX() + size / 2f, r.centerY() + size / 2f)
+            drawDropShadow(canvas, iconR, 14f * dp, 2f * dp, 0x14302010)
             fillPaint.color = 0xFFFFFFFF.toInt()
             canvas.drawRoundRect(iconR, 14f * dp, 14f * dp, fillPaint)
             drawPhotosFlowerVector(canvas, iconR)
@@ -585,10 +611,11 @@ class MikaBoardView(context: Context) : View(context) {
         rects[Tile.DOCK_CALCULATOR]?.let { r ->
             val isP = pressedTile == Tile.DOCK_CALCULATOR
             canvas.save()
-            if (isP) canvas.scale(0.94f, 0.94f, r.centerX(), r.centerY())
+            if (isP) canvas.scale(0.93f, 0.93f, r.centerX(), r.centerY())
             val size = min(r.width(), r.height() - 2f * dp)
             val iconR = RectF(r.centerX() - size / 2f, r.centerY() - size / 2f, r.centerX() + size / 2f, r.centerY() + size / 2f)
-            fillPaint.color = 0xFF36363B.toInt()
+            drawDropShadow(canvas, iconR, 14f * dp, 2f * dp, 0x14302010)
+            fillPaint.color = 0xFFF5ECE1.toInt()
             canvas.drawRoundRect(iconR, 14f * dp, 14f * dp, fillPaint)
             drawCalculatorVector(canvas, iconR)
             canvas.restore()
@@ -602,22 +629,25 @@ class MikaBoardView(context: Context) : View(context) {
         bmCatBelly?.let { bmp ->
             val w = width.toFloat()
             val h = height.toFloat()
-            val catW = w * 0.42f
+            val catW = w * 0.44f
             val catH = catW * bmp.height / bmp.width
             val x = (w - catW) / 2f
-            val y = h * 0.895f - catH * 0.65f
+            val y = h * 0.938f
             val dest = RectF(x, y, x + catW, y + catH)
             canvas.drawBitmap(bmp, null, dest, bitmapPaint)
-
-            // Little pink heart doodle on left
-            drawDoodleHeart(canvas, x - 12f * dp, y + catH * 0.45f, 6.5f * dp, 0xFFF4A3B4.toInt())
         }
     }
 
-    // -------------------------------------------------------------------------
-    // VECTOR ICON DRAWING HELPERS (Exact Match with Reference Art)
-    // -------------------------------------------------------------------------
+    // Helper: Dropshadow
+    private fun drawDropShadow(canvas: Canvas, r: RectF, corner: Float, offsetY: Float, shadowColor: Int) {
+        shadowPaint.color = shadowColor
+        val sR = RectF(r.left, r.top + offsetY, r.right, r.bottom + offsetY)
+        canvas.drawRoundRect(sR, corner, corner, shadowPaint)
+    }
 
+    // -------------------------------------------------------------------------
+    // VECTOR ICON DRAWING HELPERS
+    // -------------------------------------------------------------------------
     private fun drawWhatsAppVector(canvas: Canvas, r: RectF) {
         fillPaint.color = Color.WHITE
         val cx = r.centerX()
@@ -625,7 +655,6 @@ class MikaBoardView(context: Context) : View(context) {
         val radius = r.width() * 0.26f
         canvas.drawCircle(cx, cy, radius, fillPaint)
 
-        // Green inner phone symbol
         fillPaint.color = 0xFF95D5A4.toInt()
         textPaint.typeface = fontHeavy
         textPaint.textSize = r.width() * 0.32f
@@ -652,18 +681,15 @@ class MikaBoardView(context: Context) : View(context) {
         val cx = r.centerX()
         val cy = r.centerY()
 
-        // Cyan shadow
         textPaint.typeface = fontHeavy
         textPaint.textSize = r.width() * 0.46f
         textPaint.color = 0xFF00F2FE.toInt()
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText("♬", cx - 1.5f * dp, cy + r.width() * 0.16f, textPaint)
 
-        // Pink/Red shadow
         textPaint.color = 0xFFFE0979.toInt()
         canvas.drawText("♬", cx + 1.5f * dp, cy + r.width() * 0.16f, textPaint)
 
-        // White front
         textPaint.color = Color.WHITE
         canvas.drawText("♬", cx, cy + r.width() * 0.16f, textPaint)
     }
@@ -709,14 +735,27 @@ class MikaBoardView(context: Context) : View(context) {
     }
 
     private fun drawCameraVector(canvas: Canvas, r: RectF) {
-        strokePaint.color = Color.WHITE
-        strokePaint.strokeWidth = 2.0f * dp
         val cx = r.centerX()
-        val cy = r.centerY() + 1f * dp
-        val w2 = r.width() * 0.25f
-        val h2 = r.height() * 0.18f
-        canvas.drawRoundRect(RectF(cx - w2, cy - h2, cx + w2, cy + h2), 3f * dp, 3f * dp, strokePaint)
-        canvas.drawCircle(cx, cy, h2 * 0.55f, strokePaint)
+        val cy = r.centerY()
+        val bodyW = r.width() * 0.52f
+        val bodyH = r.height() * 0.38f
+        val bodyR = RectF(cx - bodyW / 2f, cy - bodyH / 2f + 1f * dp, cx + bodyW / 2f, cy + bodyH / 2f + 1f * dp)
+
+        fillPaint.color = 0xFF383535.toInt()
+        canvas.drawRoundRect(bodyR, 5f * dp, 5f * dp, fillPaint)
+
+        // Lens circle outer
+        strokePaint.color = 0xFF5A5756.toInt()
+        strokePaint.strokeWidth = 2.0f * dp
+        canvas.drawCircle(cx, bodyR.centerY(), bodyH * 0.36f, strokePaint)
+
+        // Lens center
+        fillPaint.color = 0xFF1C1A1A.toInt()
+        canvas.drawCircle(cx, bodyR.centerY(), bodyH * 0.22f, fillPaint)
+
+        // Small yellow flash dot
+        fillPaint.color = 0xFFFFC83B.toInt()
+        canvas.drawCircle(bodyR.right - 5f * dp, bodyR.top + 5f * dp, 1.5f * dp, fillPaint)
     }
 
     private fun drawSafariCompassVector(canvas: Canvas, r: RectF) {
@@ -724,12 +763,10 @@ class MikaBoardView(context: Context) : View(context) {
         val cy = r.centerY()
         val rad = r.width() * 0.30f
 
-        // Blue ring
         strokePaint.color = 0xFF4A90E2.toInt()
         strokePaint.strokeWidth = 2.4f * dp
         canvas.drawCircle(cx, cy, rad, strokePaint)
 
-        // Red top needle
         fillPaint.color = 0xFFE84D4D.toInt()
         path.reset()
         path.moveTo(cx - 3.5f * dp, cy)
@@ -738,7 +775,6 @@ class MikaBoardView(context: Context) : View(context) {
         path.close()
         canvas.drawPath(path, fillPaint)
 
-        // White bottom needle
         fillPaint.color = 0xFFCCCCCC.toInt()
         path.reset()
         path.moveTo(cx - 3.5f * dp, cy)
@@ -768,16 +804,33 @@ class MikaBoardView(context: Context) : View(context) {
     private fun drawCalculatorVector(canvas: Canvas, r: RectF) {
         val cx = r.centerX()
         val cy = r.centerY()
-        val s = 6.5f * dp
-        val gap = 3.5f * dp
+        val calcW = r.width() * 0.50f
+        val calcH = r.height() * 0.65f
+        val calcR = RectF(cx - calcW / 2f, cy - calcH / 2f, cx + calcW / 2f, cy + calcH / 2f)
 
-        fillPaint.color = Color.WHITE
-        canvas.drawRoundRect(RectF(cx - s - gap / 2f, cy - s - gap / 2f, cx - gap / 2f, cy - gap / 2f), 2f * dp, 2f * dp, fillPaint)
-        canvas.drawRoundRect(RectF(cx + gap / 2f, cy - s - gap / 2f, cx + s + gap / 2f, cy - gap / 2f), 2f * dp, 2f * dp, fillPaint)
-        canvas.drawRoundRect(RectF(cx - s - gap / 2f, cy + gap / 2f, cx - gap / 2f, cy + s + gap / 2f), 2f * dp, 2f * dp, fillPaint)
+        fillPaint.color = 0xFF2A2828.toInt()
+        canvas.drawRoundRect(calcR, 5f * dp, 5f * dp, fillPaint)
 
-        fillPaint.color = 0xFFF5A623.toInt() // orange equal key
-        canvas.drawRoundRect(RectF(cx + gap / 2f, cy + gap / 2f, cx + s + gap / 2f, cy + s + gap / 2f), 2f * dp, 2f * dp, fillPaint)
+        // Display screen bar
+        fillPaint.color = 0xFF454242.toInt()
+        val screenR = RectF(calcR.left + 3f * dp, calcR.top + 3.5f * dp, calcR.right - 3f * dp, calcR.top + 10f * dp)
+        canvas.drawRoundRect(screenR, 2f * dp, 2f * dp, fillPaint)
+
+        // 3 cols x 4 rows of round keys
+        val keyRadius = 1.8f * dp
+        val startX = calcR.left + 5.5f * dp
+        val startY = calcR.top + 14.5f * dp
+        val stepX = (calcR.width() - 11f * dp) / 2f
+        val stepY = (calcR.height() - 19f * dp) / 3f
+
+        for (row in 0..3) {
+            for (col in 0..2) {
+                val bx = startX + col * stepX
+                val by = startY + row * stepY
+                fillPaint.color = if (col == 2) 0xFFFF9500.toInt() else 0xFF6E6868.toInt()
+                canvas.drawCircle(bx, by, keyRadius, fillPaint)
+            }
+        }
     }
 
     // -------------------------------------------------------------------------

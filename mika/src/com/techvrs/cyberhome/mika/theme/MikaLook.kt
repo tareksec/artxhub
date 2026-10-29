@@ -45,10 +45,15 @@ object MikaLook {
         val provider = MikaBoardWidget.component()
         val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
 
-        // 1. Clear any conflicting items currently occupying Screen 0 of Desktop
+        // 1. Clear any conflicting items currently occupying Screen 0 of Desktop and Hotseat
         db.delete(
             Favorites.TABLE_NAME,
             "${Favorites.CONTAINER} = ${Favorites.CONTAINER_DESKTOP} AND ${Favorites.SCREEN} = 0",
+            null,
+        )
+        db.delete(
+            Favorites.TABLE_NAME,
+            "${Favorites.CONTAINER} = ${Favorites.CONTAINER_HOTSEAT}",
             null,
         )
 
