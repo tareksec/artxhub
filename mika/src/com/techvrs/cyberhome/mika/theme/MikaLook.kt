@@ -4,6 +4,7 @@ package com.techvrs.cyberhome.mika.theme
 import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.android.launcher3.InvariantDeviceProfile
@@ -29,9 +30,29 @@ object MikaLook {
     fun applyWallpaper(context: Context, wallpaperRes: Int = MikaStore.getWallpaperRes(context)): Boolean = runCatching {
         val wm = WallpaperManager.getInstance(context)
         // 1. Set System Home Screen Wallpaper
-        wm.setResource(wallpaperRes, WallpaperManager.FLAG_SYSTEM)
+        runCatching {
+            val homeBmp = BitmapFactory.decodeResource(context.resources, wallpaperRes)
+            if (homeBmp != null) {
+                wm.setBitmap(homeBmp, null, true, WallpaperManager.FLAG_SYSTEM)
+            } else {
+                wm.setResource(wallpaperRes, WallpaperManager.FLAG_SYSTEM)
+            }
+        }.onFailure {
+            wm.setResource(wallpaperRes, WallpaperManager.FLAG_SYSTEM)
+        }
+
         // 2. Set System Lock Screen Wallpaper to the exact Mika Lockscreen artwork
-        wm.setResource(com.android.launcher3.R.drawable.mika_lockscreen_art, WallpaperManager.FLAG_LOCK)
+        runCatching {
+            val lockBmp = BitmapFactory.decodeResource(context.resources, com.android.launcher3.R.drawable.mika_lockscreen_art)
+            if (lockBmp != null) {
+                wm.setBitmap(lockBmp, null, true, WallpaperManager.FLAG_LOCK)
+            } else {
+                wm.setResource(com.android.launcher3.R.drawable.mika_lockscreen_art, WallpaperManager.FLAG_LOCK)
+            }
+        }.onFailure {
+            wm.setResource(com.android.launcher3.R.drawable.mika_lockscreen_art, WallpaperManager.FLAG_LOCK)
+        }
+
         Log.i(TAG, "Mika home and lockscreen wallpapers applied successfully.")
         true
     }.onFailure { Log.w(TAG, "Failed to apply Mika wallpaper", it) }.getOrDefault(false)
@@ -48,9 +69,10 @@ object MikaLook {
         val provider = MikaBoardWidget.component()
         val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
 
-        // Activate Mika full icon theme
+        // Activate Mika full icon theme and apply home & lockscreen wallpapers
         MikaStore.setMikaActive(app, true)
         MikaIconTransformer.clearCache()
+        applyWallpaper(app)
 
         // 1. Clear any conflicting items currently occupying Screen 0 of Desktop and Hotseat
         db.delete(

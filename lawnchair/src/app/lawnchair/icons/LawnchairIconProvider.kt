@@ -237,11 +237,12 @@ class LawnchairIconProvider @JvmOverloads constructor(
     }
 
     override fun getSystemStateForPackage(systemState: String, packageName: String): String {
-        return super.getSystemStateForPackage(systemState, packageName) + ",$isThemeEnabled"
+        val mika = if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) "mika:v3" else "mika:0"
+        return super.getSystemStateForPackage(systemState, packageName) + ",$isThemeEnabled,$mika"
     }
 
     override fun getSystemIconState(): String {
-        val mika = if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) "mika:1" else "mika:0"
+        val mika = if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) "mika:v3" else "mika:0"
         return super.getSystemIconState() + ",pack:${iconPackPref.get()}/${themedIconPackPref.get()},ver:$iconPackVersion,$mika"
     }
 
