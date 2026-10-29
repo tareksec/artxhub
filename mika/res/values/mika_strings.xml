@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <resources>
-    <string name="mika_theme_name">Mika</string>
+    <string name="mika_theme_name">Mika Cozy Cat</string>
     <string name="mika_board_label">Mika Cozy Board</string>
     <string name="mika_board_description">Cozy pastel anime and cat home screen</string>
-    <string name="mika_lock_label">Mika Lock Widget</string>
-    <string name="mika_search_hint">Buscar</string>
+    <string name="mika_lock_label">Mika Lock &amp; Music Widget</string>
+    <string name="mika_search_hint">Search</string>
     <string name="mika_quote_good_things">Good Things Take Time ♡</string>
-    <string name="mika_quote_small_steps">Small steps big dreams</string>
     <string name="mika_calendar_header">🐾 Calendar 🐾</string>
     <string name="mika_photos_label">🐾 Photos 🐾</string>
     <string name="mika_music_title">Better Days</string>
     <string name="mika_music_artist">Lofi Vibes</string>
     <string name="mika_weather_sample">Sáb., 4 🌧 Chuva forte</string>
-    <string name="mika_apply_theme">Apply Mika Theme</string>
+    <string name="mika_apply_theme">🐾 Apply Mika Theme</string>
+    <string name="mika_customizer_title">Mika Theme Customizer</string>
+    <string name="mika_customizer_subtitle">Personalize your cozy anime &amp; cat home screen</string>
+    <string name="mika_wallpapers_title">Wallpapers (5 Cozy Styles)</string>
+    <string name="mika_characters_title">Hero Illustration</string>
+    <string name="mika_quote_label">Daily Sticky Note Quote</string>
+    <string name="mika_quote_hint">Type your favorite memo or quote...</string>
+    <string name="mika_switch_cyber">🌸 Switch to CyberHome</string>
+    <string name="mika_applied_toast">Mika Theme applied! 🐾</string>
+    <string name="mika_cyber_applied_toast">CyberHome Theme applied! 🌸</string>
 </resources>

@@ -11,16 +11,14 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.Typeface
-import android.graphics.drawable.Drawable
+import android.media.AudioManager
 import android.os.BatteryManager
-import android.provider.AlarmClock
+import android.os.SystemClock
 import android.provider.CalendarContract
 import android.text.TextPaint
-import android.text.format.DateFormat
 import android.view.HapticFeedbackConstants
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -28,24 +26,26 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.util.Executors.THREAD_POOL_EXECUTOR
+import com.techvrs.cyberhome.cyber.settings.WeatherCityActivity
+import com.techvrs.cyberhome.cyber.widgets.music.MediaSessionTracker
+import com.techvrs.cyberhome.cyber.widgets.weather.WeatherStore
+import com.techvrs.cyberhome.mika.settings.MikaPreviewActivity
+import com.techvrs.cyberhome.mika.theme.MikaStore
 import com.techvrs.cyberhome.mika.theme.MikaTheme
-import java.text.DateFormatSymbols
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.min
 
 /**
- * The Mika Cozy Board View:
- * Draws the complete cozy anime & cat home screen inspired directly by the reference design.
- * Features:
- * - Top card with battery pill, localized date/day, coffee doodle, and anime girl with cat on head.
- * - Calendar header with paw prints.
- * - Fluffy kitten looking at phone photo frame ("🐾 Photos 🐾").
- * - Pastel squircle app grid: WhatsApp, Instagram, TikTok, Pinterest, Spotify, Uber, Flo.
- * - Anime girl holding black cat cutout.
- * - Dual "Good Things Take Time ♡" sticky notes with pink washi tape & peeking cat.
- * - "🔍 Buscar 🐾" search pill.
- * - Bottom dock with Camera, Browser, Gallery, Calculator and sleeping kitten on belly.
+ * Modernized Mika Cozy Board View:
+ * Draws the cozy pastel anime & cat aesthetic with live data & full customization:
+ * - Top card with dynamic battery pill, date, live weather (WeatherStore), and selected character.
+ * - Photo frame widget ("🐾 Photos 🐾") opening Gallery.
+ * - Pastel app shortcuts with graceful system fallbacks.
+ * - Interactive Sticky Note displaying user's custom quote; tapping opens Mika Customizer.
+ * - Live Lofi Music Player bar connected to MediaSessionTracker with Play/Pause & Skip buttons.
+ * - Search pill opening launcher app drawer.
+ * - Cozy sleeping kitten resting right above the launcher dock.
  */
 class MikaBoardView(context: Context) : View(context) {
 
@@ -60,7 +60,6 @@ class MikaBoardView(context: Context) : View(context) {
     private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val path = Path()
-    private val tmpRect = RectF()
 
     // Fonts
     private val fontBold = MikaTheme.getFontBold(context)
@@ -70,39 +69,45 @@ class MikaBoardView(context: Context) : View(context) {
     // Interactive Tiles
     private enum class Tile {
         TOP_CARD,
+        WEATHER_BADGE,
         PHOTO_FRAME,
-        APP_WHATSAPP, APP_INSTAGRAM, APP_TIKTOK, APP_PINTEREST,
-        APP_SPOTIFY, APP_UBER, APP_FLO,
-        STICKY_LEFT, STICKY_RIGHT,
+        APP_WHATSAPP, APP_INSTAGRAM, APP_SPOTIFY, APP_TIKTOK,
+        STICKY_NOTE,
+        MUSIC_PREV, MUSIC_PLAY, MUSIC_NEXT, MUSIC_CARD,
         SEARCH_BAR,
-        DOCK_CAMERA, DOCK_BROWSER, DOCK_PHOTOS, DOCK_CALCULATOR,
     }
 
     private val rects = HashMap<Tile, RectF>()
     private var pressedTile: Tile? = null
 
-    // Bitmaps cached
-    private var bmGirlCatHead: Bitmap? = null
+    // Bitmaps
+    private var bmHeroCharacter: Bitmap? = null
     private var bmCatPhone: Bitmap? = null
     private var bmGirlBlackCat: Bitmap? = null
     private var bmCatBelly: Bitmap? = null
     private var bmCatPeeking: Bitmap? = null
-    private var bmStickyGoodThings: Bitmap? = null
 
-    // Battery state
-    private var batteryLevel = 80
+    // Live states
+    private var batteryLevel = 85
     private var isCharging = false
 
-    private val batteryReceiver = object : BroadcastReceiver() {
+    private val weatherStore = WeatherStore(context)
+
+    private val receiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
-                val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
-                val newLevel = if (level >= 0 && scale > 0) level * 100 / scale else 80
-                val newCharging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
-                if (newLevel != batteryLevel || newCharging != isCharging) {
-                    batteryLevel = newLevel
-                    isCharging = newCharging
+            when (intent.action) {
+                Intent.ACTION_BATTERY_CHANGED -> {
+                    val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+                    val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
+                    val newLevel = if (level >= 0 && scale > 0) level * 100 / scale else 80
+                    val newCharging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
+                    if (newLevel != batteryLevel || newCharging != isCharging) {
+                        batteryLevel = newLevel
+                        isCharging = newCharging
+                        invalidate()
+                    }
+                }
+                Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED, Intent.ACTION_DATE_CHANGED -> {
                     invalidate()
                 }
             }
@@ -121,23 +126,25 @@ class MikaBoardView(context: Context) : View(context) {
             addAction(Intent.ACTION_TIME_CHANGED)
             addAction(Intent.ACTION_DATE_CHANGED)
         }
-        ContextCompat.registerReceiver(context, batteryReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        loadBitmapsAsync()
+        invalidate()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        runCatching { context.unregisterReceiver(batteryReceiver) }
+        runCatching { context.unregisterReceiver(receiver) }
     }
 
     private fun loadBitmapsAsync() {
         THREAD_POOL_EXECUTOR.execute {
             val res = context.resources
-            bmGirlCatHead = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_cat_head)
+            val heroRes = MikaStore.getCharacterRes(context)
+            bmHeroCharacter = BitmapFactory.decodeResource(res, heroRes)
             bmCatPhone = BitmapFactory.decodeResource(res, R.drawable.mika_photo_cat_phone)
             bmGirlBlackCat = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_blackcat)
             bmCatBelly = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_belly)
             bmCatPeeking = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_peeking)
-            bmStickyGoodThings = BitmapFactory.decodeResource(res, R.drawable.mika_sticky_good_things)
             postInvalidate()
         }
     }
@@ -152,44 +159,42 @@ class MikaBoardView(context: Context) : View(context) {
         fun r(leftPct: Float, topPct: Float, rightPct: Float, bottomPct: Float) =
             RectF(leftPct * w / 100f, topPct * h / 100f, rightPct * w / 100f, bottomPct * h / 100f)
 
-        // 1. Top Card (sábado 4 DE JANEIRO + girl with cat on head)
-        rects[Tile.TOP_CARD] = r(2f, 1f, 98f, 26f)
+        // 1. Top Card (battery, weather, localized date, hero anime cat)
+        rects[Tile.TOP_CARD] = r(3f, 1f, 97f, 25f)
+        rects[Tile.WEATHER_BADGE] = r(58f, 2.5f, 95f, 6.5f)
 
-        // 2. Middle Row Left: Photo frame (cat looking at phone)
-        rects[Tile.PHOTO_FRAME] = r(4f, 29.5f, 48f, 53.5f)
+        // 2. Middle Row Left: Photo frame
+        rects[Tile.PHOTO_FRAME] = r(4f, 27.5f, 48f, 50.5f)
 
-        // 3. Middle Row Right: 2x2 App Grid (WhatsApp, Instagram, TikTok, Pinterest)
+        // 3. Middle Row Right: 2x2 App Grid
         val appW = 20.5f
         val appH = 10.5f
         val x0 = 52f
         val x1 = 76.5f
-        val y0 = 30f
-        val y1 = 42.5f
+        val y0 = 28f
+        val y1 = 40f
 
         rects[Tile.APP_WHATSAPP] = r(x0, y0, x0 + appW, y0 + appH)
         rects[Tile.APP_INSTAGRAM] = r(x1, y0, x1 + appW, y0 + appH)
-        rects[Tile.APP_TIKTOK] = r(x0, y1, x0 + appW, y1 + appH)
-        rects[Tile.APP_PINTEREST] = r(x1, y1, x1 + appW, y1 + appH)
+        rects[Tile.APP_SPOTIFY] = r(x0, y1, x0 + appW, y1 + appH)
+        rects[Tile.APP_TIKTOK] = r(x1, y1, x1 + appW, y1 + appH)
 
-        // 4. Row 3: Apps + Girl with black cat
-        val y2 = 56f
-        val appSmallW = 14f
-        rects[Tile.APP_SPOTIFY] = r(4f, y2, 4f + appSmallW, y2 + appH)
-        rects[Tile.APP_UBER] = r(20f, y2, 20f + appSmallW, y2 + appH)
-        rects[Tile.APP_FLO] = r(36f, y2, 36f + appSmallW, y2 + appH)
+        // 4. Sticky Note Row (Full aesthetic memo card)
+        rects[Tile.STICKY_NOTE] = r(4f, 52.5f, 96f, 67.5f)
 
-        // 5. Sticky Notes Row
-        rects[Tile.STICKY_LEFT] = r(4f, 69f, 48f, 82.5f)
-        rects[Tile.STICKY_RIGHT] = r(52f, 69f, 96f, 82.5f)
+        // 5. Live Music Player Bar
+        val musicR = r(4f, 69.5f, 96f, 79.5f)
+        rects[Tile.MUSIC_CARD] = musicR
+        val btnSize = 36f * dp
+        val btnY = musicR.centerY()
+        rects[Tile.MUSIC_NEXT] = RectF(musicR.right - 14f * dp - btnSize, btnY - btnSize / 2f, musicR.right - 14f * dp, btnY + btnSize / 2f)
+        rects[Tile.MUSIC_PLAY] = RectF(musicR.right - 18f * dp - btnSize * 2f, btnY - btnSize / 2f, musicR.right - 18f * dp - btnSize, btnY + btnSize / 2f)
+        rects[Tile.MUSIC_PREV] = RectF(musicR.right - 22f * dp - btnSize * 3f, btnY - btnSize / 2f, musicR.right - 22f * dp - btnSize * 2f, btnY + btnSize / 2f)
 
         // 6. Search Bar
-        rects[Tile.SEARCH_BAR] = r(28f, 84f, 72f, 88.5f)
+        rects[Tile.SEARCH_BAR] = r(20f, 81.5f, 80f, 86.5f)
 
-        // 7. Dock
-        rects[Tile.DOCK_CAMERA] = r(6f, 91f, 24f, 98f)
-        rects[Tile.DOCK_BROWSER] = r(29f, 91f, 47f, 98f)
-        rects[Tile.DOCK_PHOTOS] = r(53f, 91f, 71f, 98f)
-        rects[Tile.DOCK_CALCULATOR] = r(76f, 91f, 94f, 98f)
+        // Note: Bottom 13% is reserved for the Launcher Hotseat (dock) so real apps sit underneath!
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -202,10 +207,9 @@ class MikaBoardView(context: Context) : View(context) {
         drawCalendarHeader(canvas)
         drawPhotoFrame(canvas)
         drawAppIcons(canvas)
-        drawGirlBlackCatCutout(canvas)
-        drawStickyNotes(canvas)
+        drawStickyNote(canvas)
+        drawMusicPlayer(canvas)
         drawSearchBar(canvas)
-        drawDock(canvas)
         drawSleepingCatBelly(canvas)
     }
 
@@ -213,15 +217,15 @@ class MikaBoardView(context: Context) : View(context) {
         val r = rects[Tile.TOP_CARD] ?: return
         val corner = 22f * dp
 
-        // Card background
+        // Card surface & border
         fillPaint.color = MikaTheme.COLOR_CARD
         canvas.drawRoundRect(r, corner, corner, fillPaint)
         strokePaint.color = MikaTheme.COLOR_BORDER
         strokePaint.strokeWidth = 1f * dp
         canvas.drawRoundRect(r, corner, corner, strokePaint)
 
-        // Battery pill (e.g., "4%")
-        val pillR = RectF(r.left + 16f * dp, r.top + 14f * dp, r.left + 58f * dp, r.top + 34f * dp)
+        // Battery Pill: e.g. "⚡ 85%"
+        val pillR = RectF(r.left + 16f * dp, r.top + 14f * dp, r.left + 72f * dp, r.top + 34f * dp)
         fillPaint.color = MikaTheme.COLOR_SURFACE
         canvas.drawRoundRect(pillR, 10f * dp, 10f * dp, fillPaint)
         strokePaint.color = MikaTheme.COLOR_BORDER
@@ -229,52 +233,64 @@ class MikaBoardView(context: Context) : View(context) {
 
         textPaint.typeface = fontBold
         textPaint.textSize = 11f * dp
-        textPaint.color = MikaTheme.COLOR_TEXT_TITLE
+        textPaint.color = if (isCharging) MikaTheme.COLOR_MINT else MikaTheme.COLOR_TEXT_TITLE
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText("$batteryLevel%", pillR.centerX(), pillR.centerY() + 4f * dp, textPaint)
+        val batText = if (isCharging) "⚡ $batteryLevel%" else "$batteryLevel%"
+        canvas.drawText(batText, pillR.centerX(), pillR.centerY() + 4f * dp, textPaint)
 
-        // Day and date
+        // Weather Badge in Top Card
+        val weatherText = weatherStore.city?.let { city ->
+            val temp = weatherStore.last?.temperatureC?.toInt() ?: 24
+            "🌤 ${temp}°C · ${city.name}"
+        } ?: "🌤 25°C · Cozy Day ♡"
+
+        textPaint.typeface = fontRegular
+        textPaint.textSize = 11f * dp
+        textPaint.color = MikaTheme.COLOR_TEXT_DIM
+        textPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText(weatherText, pillR.right + 10f * dp, pillR.centerY() + 4f * dp, textPaint)
+
+        // Day of week & date
         val now = Calendar.getInstance()
-        val dayName = now.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())?.lowercase() ?: "sábado"
+        val dayName = now.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()) ?: "Today"
         val dayNum = now.get(Calendar.DAY_OF_MONTH)
-        val monthName = now.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())?.uppercase() ?: "JANEIRO"
+        val monthName = now.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())?.uppercase() ?: "MONTH"
 
         textPaint.typeface = fontBold
-        textPaint.textSize = 28f * dp
+        textPaint.textSize = 26f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_TITLE
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText(dayName, r.left + 16f * dp, r.top + 72f * dp, textPaint)
+        canvas.drawText(dayName.lowercase(), r.left + 16f * dp, r.top + 70f * dp, textPaint)
 
         textPaint.typeface = fontBold
         textPaint.textSize = 12f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_DIM
-        canvas.drawText("$dayNum DE $monthName", r.left + 16f * dp, r.top + 94f * dp, textPaint)
+        canvas.drawText("$dayNum DE $monthName", r.left + 16f * dp, r.top + 92f * dp, textPaint)
 
         // Coffee doodle
-        drawCoffeeDoodle(canvas, r.left + 18f * dp, r.top + 114f * dp)
+        drawCoffeeDoodle(canvas, r.left + 18f * dp, r.top + 112f * dp)
 
-        // Girl with cat on head artwork
-        bmGirlCatHead?.let { bmp ->
-            val artW = r.width() * 0.52f
-            val artH = r.height() * 0.94f
+        // Hero Character Artwork
+        bmHeroCharacter?.let { bmp ->
+            val artW = r.width() * 0.48f
+            val artH = r.height() * 0.92f
             val artRect = RectF(r.right - artW, r.bottom - artH, r.right - 4f * dp, r.bottom)
             canvas.drawBitmap(bmp, null, artRect, bitmapPaint)
         }
     }
 
     private fun drawCalendarHeader(canvas: Canvas) {
-        val y = height * 0.285f
+        val y = height * 0.268f
         textPaint.typeface = fontBold
-        textPaint.textSize = 13f * dp
+        textPaint.textSize = 12f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_BODY
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(context.getString(R.string.mika_calendar_header), width * 0.76f, y, textPaint)
+        canvas.drawText(context.getString(R.string.mika_calendar_header), width * 0.74f, y, textPaint)
     }
 
     private fun drawPhotoFrame(canvas: Canvas) {
         val r = rects[Tile.PHOTO_FRAME] ?: return
         val corner = 18f * dp
-        val imageBottom = r.bottom - 22f * dp
+        val imageBottom = r.bottom - 20f * dp
         val imgR = RectF(r.left, r.top, r.right, imageBottom)
 
         canvas.save()
@@ -294,49 +310,40 @@ class MikaBoardView(context: Context) : View(context) {
         strokePaint.strokeWidth = 1f * dp
         canvas.drawRoundRect(imgR, corner, corner, strokePaint)
 
-        // Label: "🐾 Photos 🐾"
         textPaint.typeface = fontBold
-        textPaint.textSize = 12f * dp
+        textPaint.textSize = 11f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_BODY
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(context.getString(R.string.mika_photos_label), r.centerX(), r.bottom - 4f * dp, textPaint)
+        canvas.drawText(context.getString(R.string.mika_photos_label), r.centerX(), r.bottom - 2f * dp, textPaint)
     }
 
     private fun drawAppIcons(canvas: Canvas) {
-        drawSquircleApp(canvas, Tile.APP_WHATSAPP, MikaTheme.COLOR_MINT, "WhatsApp")
-        drawSquircleApp(canvas, Tile.APP_INSTAGRAM, MikaTheme.COLOR_CORAL, "Instagram")
-        drawSquircleApp(canvas, Tile.APP_TIKTOK, MikaTheme.COLOR_CHARCOAL, "TikTok")
-        drawSquircleApp(canvas, Tile.APP_PINTEREST, MikaTheme.COLOR_PINK, "Pinterest")
-        drawSquircleApp(canvas, Tile.APP_SPOTIFY, MikaTheme.COLOR_MINT, "Spotify")
-        drawSquircleApp(canvas, Tile.APP_UBER, MikaTheme.COLOR_CHARCOAL, "Uber")
-        drawSquircleApp(canvas, Tile.APP_FLO, MikaTheme.COLOR_CORAL, "Flo")
+        drawSquircleApp(canvas, Tile.APP_WHATSAPP, MikaTheme.COLOR_MINT, "Chat", "💬")
+        drawSquircleApp(canvas, Tile.APP_INSTAGRAM, MikaTheme.COLOR_CORAL, "Social", "📷")
+        drawSquircleApp(canvas, Tile.APP_SPOTIFY, MikaTheme.COLOR_MINT, "Music", "🎵")
+        drawSquircleApp(canvas, Tile.APP_TIKTOK, MikaTheme.COLOR_CHARCOAL, "Video", "▶")
     }
 
-    private fun drawSquircleApp(canvas: Canvas, tile: Tile, color: Int, label: String) {
+    private fun drawSquircleApp(canvas: Canvas, tile: Tile, color: Int, label: String, glyph: String) {
         val r = rects[tile] ?: return
         val corner = 16f * dp
         val isPressed = pressedTile == tile
 
         canvas.save()
-        if (isPressed) {
-            canvas.scale(0.95f, 0.95f, r.centerX(), r.centerY())
-        }
+        if (isPressed) canvas.scale(0.95f, 0.95f, r.centerX(), r.centerY())
 
-        // Icon squircle
-        val iconSize = min(r.width(), r.height() - 16f * dp)
+        val iconSize = min(r.width(), r.height() - 14f * dp)
         val iconR = RectF(r.centerX() - iconSize / 2f, r.top, r.centerX() + iconSize / 2f, r.top + iconSize)
 
         fillPaint.color = color
         canvas.drawRoundRect(iconR, corner, corner, fillPaint)
 
-        // White letter or glyph placeholder in center
         textPaint.typeface = fontHeavy
-        textPaint.textSize = iconSize * 0.44f
+        textPaint.textSize = iconSize * 0.42f
         textPaint.color = 0xFFFFFFFF.toInt()
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(label.take(1), iconR.centerX(), iconR.centerY() + iconSize * 0.16f, textPaint)
+        canvas.drawText(glyph, iconR.centerX(), iconR.centerY() + iconSize * 0.15f, textPaint)
 
-        // App title below icon
         textPaint.typeface = fontRegular
         textPaint.textSize = 10f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_BODY
@@ -345,57 +352,92 @@ class MikaBoardView(context: Context) : View(context) {
         canvas.restore()
     }
 
-    private fun drawGirlBlackCatCutout(canvas: Canvas) {
-        bmGirlBlackCat?.let { bmp ->
-            val w = width.toFloat()
-            val left = w * 0.62f
-            val top = height * 0.52f
-            val right = w * 0.98f
-            val bottom = height * 0.69f
-            val dest = RectF(left, top, right, bottom)
-            canvas.drawBitmap(bmp, null, dest, bitmapPaint)
-        }
-    }
+    private fun drawStickyNote(canvas: Canvas) {
+        val r = rects[Tile.STICKY_NOTE] ?: return
+        val corner = 14f * dp
 
-    private fun drawStickyNotes(canvas: Canvas) {
-        val rLeft = rects[Tile.STICKY_LEFT] ?: return
-        val rRight = rects[Tile.STICKY_RIGHT] ?: return
-
-        drawSingleStickyNote(canvas, rLeft, context.getString(R.string.mika_quote_good_things), bmStickyGoodThings, bmCatPeeking)
-        drawSingleStickyNote(canvas, rRight, context.getString(R.string.mika_quote_good_things), bmStickyGoodThings, bmCatPeeking)
-    }
-
-    private fun drawSingleStickyNote(canvas: Canvas, r: RectF, quote: String, bgBmp: Bitmap?, catBmp: Bitmap?) {
-        val corner = 12f * dp
         fillPaint.color = MikaTheme.COLOR_PEACH_SOFT
         canvas.drawRoundRect(r, corner, corner, fillPaint)
         strokePaint.color = MikaTheme.COLOR_BORDER
         strokePaint.strokeWidth = 1f * dp
         canvas.drawRoundRect(r, corner, corner, strokePaint)
 
-        // Pink washi tape on top
-        val tapeW = r.width() * 0.35f
-        val tapeH = 9f * dp
-        val tapeR = RectF(r.centerX() - tapeW / 2f, r.top - 3f * dp, r.centerX() + tapeW / 2f, r.top + tapeH)
+        // Pink washi tape
+        val tapeW = r.width() * 0.32f
+        val tapeH = 10f * dp
+        val tapeR = RectF(r.centerX() - tapeW / 2f, r.top - 4f * dp, r.centerX() + tapeW / 2f, r.top + tapeH)
         fillPaint.color = 0xCCF4A3B4.toInt()
-        canvas.drawRoundRect(tapeR, 2f * dp, 2f * dp, fillPaint)
+        canvas.drawRoundRect(tapeR, 3f * dp, 3f * dp, fillPaint)
 
-        // Quote text
+        // Custom User Quote from MikaStore
+        val quote = MikaStore.getQuoteText(context)
         textPaint.typeface = fontBold
-        textPaint.textSize = 12f * dp
+        textPaint.textSize = 14f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_TITLE
-        textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText("Good", r.centerX() - 8f * dp, r.top + 34f * dp, textPaint)
-        canvas.drawText("Things", r.centerX() - 8f * dp, r.top + 50f * dp, textPaint)
-        canvas.drawText("Take Time", r.centerX() - 8f * dp, r.top + 66f * dp, textPaint)
+        textPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText(quote, r.left + 20f * dp, r.centerY() + 5f * dp, textPaint)
 
-        // Peeking cat in corner
-        catBmp?.let { bmp ->
-            val catW = r.width() * 0.42f
+        // Subtitle hint: "tap to edit ✎"
+        textPaint.typeface = fontRegular
+        textPaint.textSize = 10f * dp
+        textPaint.color = MikaTheme.COLOR_TEXT_LIGHT
+        canvas.drawText("tap to customize memo ✎", r.left + 20f * dp, r.bottom - 8f * dp, textPaint)
+
+        // Peeking kitten in bottom right corner
+        bmCatPeeking?.let { bmp ->
+            val catW = 44f * dp
             val catH = catW * bmp.height / bmp.width
-            val catR = RectF(r.right - catW + 2f * dp, r.bottom - catH + 2f * dp, r.right + 2f * dp, r.bottom + 2f * dp)
+            val catR = RectF(r.right - catW - 4f * dp, r.bottom - catH, r.right - 4f * dp, r.bottom)
             canvas.drawBitmap(bmp, null, catR, bitmapPaint)
         }
+    }
+
+    private fun drawMusicPlayer(canvas: Canvas) {
+        val r = rects[Tile.MUSIC_CARD] ?: return
+        val corner = 18f * dp
+
+        fillPaint.color = MikaTheme.COLOR_CARD
+        canvas.drawRoundRect(r, corner, corner, fillPaint)
+        strokePaint.color = MikaTheme.COLOR_BORDER
+        strokePaint.strokeWidth = 1f * dp
+        canvas.drawRoundRect(r, corner, corner, strokePaint)
+
+        // Music track info
+        val track = MediaSessionTracker.title ?: "Better Days"
+        val artist = MediaSessionTracker.artist ?: "Lofi Vibes · Chill Cat"
+        val isPlaying = MediaSessionTracker.playing
+
+        textPaint.typeface = fontBold
+        textPaint.textSize = 13f * dp
+        textPaint.color = MikaTheme.COLOR_TEXT_TITLE
+        textPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText("🎵 $track", r.left + 16f * dp, r.centerY() - 3f * dp, textPaint)
+
+        textPaint.typeface = fontRegular
+        textPaint.textSize = 10f * dp
+        textPaint.color = MikaTheme.COLOR_TEXT_DIM
+        canvas.drawText(artist, r.left + 16f * dp, r.centerY() + 13f * dp, textPaint)
+
+        // Media Buttons
+        val drawBtn = { tile: Tile, glyph: String ->
+            rects[tile]?.let { btnR ->
+                val isP = pressedTile == tile
+                fillPaint.color = if (isP) MikaTheme.COLOR_PINK else MikaTheme.COLOR_SURFACE
+                canvas.drawCircle(btnR.centerX(), btnR.centerY(), btnR.width() / 2f, fillPaint)
+                strokePaint.color = MikaTheme.COLOR_BORDER
+                canvas.drawCircle(btnR.centerX(), btnR.centerY(), btnR.width() / 2f, strokePaint)
+
+                textPaint.typeface = fontHeavy
+                textPaint.textSize = 12f * dp
+                textPaint.color = if (isP) 0xFFFFFFFF.toInt() else MikaTheme.COLOR_TEXT_TITLE
+                textPaint.textAlign = Paint.Align.CENTER
+                canvas.drawText(glyph, btnR.centerX(), btnR.centerY() + 4f * dp, textPaint)
+            }
+        }
+
+        drawBtn(Tile.MUSIC_PREV, "⏮")
+        drawBtn(Tile.MUSIC_PLAY, if (isPlaying) "⏸" else "▶")
+        drawBtn(Tile.MUSIC_NEXT, "⏭")
     }
 
     private fun drawSearchBar(canvas: Canvas) {
@@ -409,47 +451,18 @@ class MikaBoardView(context: Context) : View(context) {
         canvas.drawRoundRect(r, pillCorner, pillCorner, strokePaint)
 
         textPaint.typeface = fontBold
-        textPaint.textSize = 13f * dp
+        textPaint.textSize = 12f * dp
         textPaint.color = MikaTheme.COLOR_TEXT_BODY
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText("🔍  ${context.getString(R.string.mika_search_hint)}  🐾", r.centerX(), r.centerY() + 4.5f * dp, textPaint)
     }
 
-    private fun drawDock(canvas: Canvas) {
-        val dockR = RectF(width * 0.04f, height * 0.905f, width * 0.96f, height * 0.985f)
-        val corner = 28f * dp
-
-        fillPaint.color = MikaTheme.COLOR_DOCK
-        canvas.drawRoundRect(dockR, corner, corner, fillPaint)
-        strokePaint.color = MikaTheme.COLOR_BORDER
-        strokePaint.strokeWidth = 1f * dp
-        canvas.drawRoundRect(dockR, corner, corner, strokePaint)
-
-        drawDockIcon(canvas, Tile.DOCK_CAMERA, MikaTheme.COLOR_CHARCOAL, "📷")
-        drawDockIcon(canvas, Tile.DOCK_BROWSER, MikaTheme.COLOR_BLUE, "🧭")
-        drawDockIcon(canvas, Tile.DOCK_PHOTOS, MikaTheme.COLOR_PINK, "🌸")
-        drawDockIcon(canvas, Tile.DOCK_CALCULATOR, MikaTheme.COLOR_CHARCOAL, "🔢")
-    }
-
-    private fun drawDockIcon(canvas: Canvas, tile: Tile, color: Int, emoji: String) {
-        val r = rects[tile] ?: return
-        val size = min(r.width(), r.height())
-        val iconR = RectF(r.centerX() - size / 2f, r.centerY() - size / 2f, r.centerX() + size / 2f, r.centerY() + size / 2f)
-
-        fillPaint.color = color
-        canvas.drawRoundRect(iconR, 14f * dp, 14f * dp, fillPaint)
-
-        textPaint.textSize = size * 0.52f
-        textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(emoji, iconR.centerX(), iconR.centerY() + size * 0.18f, textPaint)
-    }
-
     private fun drawSleepingCatBelly(canvas: Canvas) {
         bmCatBelly?.let { bmp ->
-            val catW = width * 0.46f
+            val catW = width * 0.40f
             val catH = catW * bmp.height / bmp.width
             val x = (width - catW) / 2f
-            val y = height - catH - 2f * dp
+            val y = height * 0.875f
             val dest = RectF(x, y, x + catW, y + catH)
             canvas.drawBitmap(bmp, null, dest, bitmapPaint)
         }
@@ -460,7 +473,6 @@ class MikaBoardView(context: Context) : View(context) {
         strokePaint.strokeWidth = 1.2f * dp
         val cupR = RectF(x, y, x + 14f * dp, y + 10f * dp)
         canvas.drawRoundRect(cupR, 3f * dp, 3f * dp, strokePaint)
-        // handle
         val handleR = RectF(x + 12f * dp, y + 2f * dp, x + 17f * dp, y + 7f * dp)
         canvas.drawArc(handleR, -90f, 180f, false, strokePaint)
     }
@@ -472,7 +484,7 @@ class MikaBoardView(context: Context) : View(context) {
             MotionEvent.ACTION_DOWN -> {
                 pressedTile = hitTest(x, y)
                 if (pressedTile != null) {
-                    performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     invalidate()
                     return true
                 }
@@ -504,29 +516,38 @@ class MikaBoardView(context: Context) : View(context) {
     private fun onTileClicked(tile: Tile) {
         when (tile) {
             Tile.TOP_CARD -> launchIntent(Intent(Intent.ACTION_VIEW).setData(CalendarContract.CONTENT_URI))
-            Tile.PHOTO_FRAME, Tile.DOCK_PHOTOS -> launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_GALLERY))
-            Tile.APP_WHATSAPP -> launchPackageOrSearch("com.whatsapp", "WhatsApp")
-            Tile.APP_INSTAGRAM -> launchPackageOrSearch("com.instagram.android", "Instagram")
-            Tile.APP_TIKTOK -> launchPackageOrSearch("com.zhiliaoapp.musically", "TikTok")
-            Tile.APP_PINTEREST -> launchPackageOrSearch("com.pinterest", "Pinterest")
-            Tile.APP_SPOTIFY -> launchPackageOrSearch("com.spotify.music", "Spotify")
-            Tile.APP_UBER -> launchPackageOrSearch("com.ubercab", "Uber")
-            Tile.APP_FLO -> launchPackageOrSearch("org.iggymedia.periodtracker", "Flo")
+            Tile.WEATHER_BADGE -> launchIntent(Intent(context, WeatherCityActivity::class.java))
+            Tile.PHOTO_FRAME -> launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_GALLERY))
+            Tile.APP_WHATSAPP -> launchPackageOrFallback("com.whatsapp", Intent.CATEGORY_APP_MESSAGING)
+            Tile.APP_INSTAGRAM -> launchPackageOrFallback("com.instagram.android", Intent.CATEGORY_APP_GALLERY)
+            Tile.APP_SPOTIFY -> launchPackageOrFallback("com.spotify.music", Intent.CATEGORY_APP_MUSIC)
+            Tile.APP_TIKTOK -> launchPackageOrFallback("com.zhiliaoapp.musically", Intent.CATEGORY_APP_BROWSER)
+            Tile.STICKY_NOTE -> MikaPreviewActivity.open(context)
+            Tile.MUSIC_PREV -> dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            Tile.MUSIC_PLAY -> dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+            Tile.MUSIC_NEXT -> dispatchMediaKey(KeyEvent.KEYCODE_MEDIA_NEXT)
+            Tile.MUSIC_CARD -> launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MUSIC))
             Tile.SEARCH_BAR -> openLauncherSearch()
-            Tile.DOCK_CAMERA -> launchIntent(Intent("android.media.action.STILL_IMAGE_CAMERA"))
-            Tile.DOCK_BROWSER -> launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER))
-            Tile.DOCK_CALCULATOR -> launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, "android.intent.category.APP_CALCULATOR"))
-            Tile.STICKY_LEFT, Tile.STICKY_RIGHT -> launchNotes()
         }
     }
 
-    private fun launchPackageOrSearch(pkg: String, name: String) {
+    private fun dispatchMediaKey(code: Int) {
+        val audio = context.getSystemService(AudioManager::class.java) ?: return
+        val now = SystemClock.uptimeMillis()
+        audio.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_DOWN, code, 0))
+        audio.dispatchMediaKeyEvent(KeyEvent(now, now, KeyEvent.ACTION_UP, code, 0))
+        postDelayed({ invalidate() }, 500)
+    }
+
+    private fun launchPackageOrFallback(pkg: String, fallbackCategory: String) {
         val pm = context.packageManager
         val intent = pm.getLaunchIntentForPackage(pkg)
         if (intent != null) {
             launchIntent(intent)
         } else {
-            openLauncherSearch()
+            runCatching {
+                launchIntent(Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, fallbackCategory))
+            }.onFailure { openLauncherSearch() }
         }
     }
 
@@ -541,10 +562,5 @@ class MikaBoardView(context: Context) : View(context) {
     private fun openLauncherSearch() {
         val launcher = Launcher.getLauncher(context) ?: return
         launcher.stateManager.goToState(LauncherState.ALL_APPS)
-    }
-
-    private fun launchNotes() {
-        val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_CALENDAR)
-        launchIntent(intent)
     }
 }

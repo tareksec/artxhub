@@ -51,6 +51,17 @@ private fun CyberSettingsScreen() {
     CyberScreen(stringResource(R.string.cyber_settings_title)) {
         CyberThemePicker()
         CyberRow(
+            stringResource(R.string.mika_theme_name),
+            stringResource(R.string.mika_customizer_subtitle),
+            R.drawable.mika_ic_paw,
+            colorResource(R.color.cyber_accent_pink),
+            colorResource(R.color.cyber_tint_pink),
+        ) {
+            val intent = Intent().setClassName(context.packageName, "com.techvrs.cyberhome.mika.settings.MikaPreviewActivity")
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+        CyberRow(
             stringResource(R.string.cyber_settings_reset),
             stringResource(R.string.cyber_settings_reset_desc),
             R.drawable.cyber_ic_settings,

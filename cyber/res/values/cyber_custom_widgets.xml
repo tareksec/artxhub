@@ -4,5 +4,7 @@
 <resources>
     <string-array name="cyber_custom_widget_providers" translatable="false">
         <item>com.techvrs.cyberhome.cyber.board.CozyBoardWidget</item>
+        <item>com.techvrs.cyberhome.mika.board.MikaBoardWidget</item>
+        <item>com.techvrs.cyberhome.mika.board.MikaLockScreenWidget</item>
     </string-array>
 </resources>
