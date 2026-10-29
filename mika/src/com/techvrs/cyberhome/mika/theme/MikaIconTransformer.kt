@@ -18,6 +18,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.TextPaint
+import androidx.core.content.ContextCompat
+import com.android.launcher3.R
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.cos
@@ -44,6 +46,23 @@ object MikaIconTransformer {
 
         val cached = cache[packageName]
         if (cached != null) return cached
+
+        // Dedicated Soft 3D Master Icons (WhatsApp, Instagram, TikTok, Pinterest)
+        val dedicated3dRes = when (packageName) {
+            "com.whatsapp", "com.whatsapp.w4b" -> R.drawable.mika_ic_whatsapp_3d
+            "com.instagram.android" -> R.drawable.mika_ic_instagram_3d
+            "com.zhiliaoapp.musically", "com.ss.android.ugc.trill" -> R.drawable.mika_ic_tiktok_3d
+            "com.pinterest" -> R.drawable.mika_ic_pinterest_3d
+            else -> 0
+        }
+
+        if (dedicated3dRes != 0) {
+            val d = ContextCompat.getDrawable(context, dedicated3dRes)
+            if (d is BitmapDrawable) {
+                cache[packageName] = d
+                return d
+            }
+        }
 
         val size = 192 // High definition standard launcher icon size
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)

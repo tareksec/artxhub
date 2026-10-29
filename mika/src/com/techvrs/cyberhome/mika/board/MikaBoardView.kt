@@ -80,6 +80,10 @@ class MikaBoardView(context: Context) : View(context) {
     @Volatile private var bmGirlBlackCat: Bitmap? = null
     @Volatile private var bmCatBelly: Bitmap? = null
     @Volatile private var bmCatPeeking: Bitmap? = null
+    @Volatile private var bmWhatsApp3D: Bitmap? = null
+    @Volatile private var bmInstagram3D: Bitmap? = null
+    @Volatile private var bmTikTok3D: Bitmap? = null
+    @Volatile private var bmPinterest3D: Bitmap? = null
 
     // Battery & Charging
     private var batteryLevel = 4
@@ -136,6 +140,10 @@ class MikaBoardView(context: Context) : View(context) {
             bmGirlBlackCat = BitmapFactory.decodeResource(res, R.drawable.mika_char_girl_blackcat, opts)
             bmCatBelly = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_belly, opts)
             bmCatPeeking = BitmapFactory.decodeResource(res, R.drawable.mika_char_cat_peeking, opts)
+            bmWhatsApp3D = BitmapFactory.decodeResource(res, R.drawable.mika_ic_whatsapp_3d, opts)
+            bmInstagram3D = BitmapFactory.decodeResource(res, R.drawable.mika_ic_instagram_3d, opts)
+            bmTikTok3D = BitmapFactory.decodeResource(res, R.drawable.mika_ic_tiktok_3d, opts)
+            bmPinterest3D = BitmapFactory.decodeResource(res, R.drawable.mika_ic_pinterest_3d, opts)
             postInvalidate()
         }
     }
@@ -359,38 +367,58 @@ class MikaBoardView(context: Context) : View(context) {
         // WhatsApp
         rects[Tile.APP_WHATSAPP]?.let { r ->
             drawAppIcon(canvas, r, Tile.APP_WHATSAPP, "WhatsApp") { iconR ->
-                fillPaint.color = 0xFF95D5A4.toInt()
-                canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
-                drawWhatsAppVector(canvas, iconR)
+                val bmp = bmWhatsApp3D
+                if (bmp != null) {
+                    canvas.drawBitmap(bmp, null, iconR, bitmapPaint)
+                } else {
+                    fillPaint.color = 0xFF95D5A4.toInt()
+                    canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
+                    drawWhatsAppVector(canvas, iconR)
+                }
             }
         }
         // Instagram
         rects[Tile.APP_INSTAGRAM]?.let { r ->
             drawAppIcon(canvas, r, Tile.APP_INSTAGRAM, "Instagram") { iconR ->
-                val gradient = LinearGradient(
-                    iconR.left, iconR.bottom, iconR.right, iconR.top,
-                    0xFFF2828F.toInt(), 0xFFF7A299.toInt(), Shader.TileMode.CLAMP
-                )
-                fillPaint.shader = gradient
-                canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
-                fillPaint.shader = null
-                drawInstagramVector(canvas, iconR)
+                val bmp = bmInstagram3D
+                if (bmp != null) {
+                    canvas.drawBitmap(bmp, null, iconR, bitmapPaint)
+                } else {
+                    val gradient = LinearGradient(
+                        iconR.left, iconR.bottom, iconR.right, iconR.top,
+                        0xFFF2828F.toInt(), 0xFFF7A299.toInt(), Shader.TileMode.CLAMP
+                    )
+                    fillPaint.shader = gradient
+                    canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
+                    fillPaint.shader = null
+                    drawInstagramVector(canvas, iconR)
+                }
             }
         }
         // TikTok
         rects[Tile.APP_TIKTOK]?.let { r ->
             drawAppIcon(canvas, r, Tile.APP_TIKTOK, "TikTok") { iconR ->
-                fillPaint.color = 0xFF36363B.toInt()
-                canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
-                drawTikTokVector(canvas, iconR)
+                val bmp = bmTikTok3D
+                if (bmp != null) {
+                    canvas.drawBitmap(bmp, null, iconR, bitmapPaint)
+                } else {
+                    fillPaint.color = 0xFF36363B.toInt()
+                    canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
+                    drawTikTokVector(canvas, iconR)
+                }
             }
         }
         // Pinterest
         rects[Tile.APP_PINTEREST]?.let { r ->
             drawAppIcon(canvas, r, Tile.APP_PINTEREST, "Pinterest") { iconR ->
-                fillPaint.color = 0xFFE85565.toInt()
-                canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
-                drawPinterestVector(canvas, iconR)
+                val bmp = bmPinterest3D
+                if (bmp != null) {
+                    canvas.drawBitmap(bmp, null, iconR, bitmapPaint)
+                } else {
+                    fillPaint.color = 0xFFE85565.toInt()
+                    canvas.drawRoundRect(iconR, 16f * dp, 16f * dp, fillPaint)
+                    drawPinterestVector(canvas, iconR)
+                }
             }
         }
     }
@@ -456,7 +484,7 @@ class MikaBoardView(context: Context) : View(context) {
 
         textPaint.typeface = fontRegular
         textPaint.textSize = 10f * dp
-        textPaint.color = 0xFF6D5545.toInt()
+        textPaint.color = 0xFF553E35.toInt() // Dark warm-brown per DESIGN.md
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(label, r.centerX(), r.bottom, textPaint)
 
