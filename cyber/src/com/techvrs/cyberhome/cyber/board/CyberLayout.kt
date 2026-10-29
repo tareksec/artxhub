@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 package com.techvrs.cyberhome.cyber.board
 
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
@@ -10,6 +11,7 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherSettings.Favorites
 import com.android.launcher3.R
 import com.android.launcher3.model.ModelDbController
+import com.android.launcher3.widget.LauncherAppWidgetProviderInfo.CLS_CUSTOM_WIDGET_PREFIX
 import com.android.launcher3.widget.custom.CustomWidgetManager
 
 /**
@@ -18,7 +20,7 @@ import com.android.launcher3.widget.custom.CustomWidgetManager
  *  - [isCyberGrid]: our grid skips partner / auto-install layouts (on GMS phones those used to
  *    replace our layout with Google's default page).
  *  - [onDefaultLayoutLoaded]: after cyber_default_workspace.xml (dock + page 2 apps) is loaded,
- *    puts the Cozy Board on the whole first page. The board is an in-launcher custom widget, so
+ *    puts the Cozy Board or Mika Board on the whole first page. The board is an in-launcher custom widget, so
  *    no widget-bind permission is involved.
  */
 object CyberLayout {
@@ -51,12 +53,15 @@ object CyberLayout {
         return true
     }
 
-    /** True if the current grid's DB has the Cozy Board (checked after "Apply look"). */
+    /** True if the current grid's DB has the Cozy Board or Mika Board (checked after "Apply look"). */
     @WorkerThread
     fun hasBoard(context: Context): Boolean = runCatching {
+        val cozy = CozyBoardWidget.component().flattenToString()
+        val mika = ComponentName("android", CLS_CUSTOM_WIDGET_PREFIX + "com.techvrs.cyberhome.mika.board.MikaBoardWidget").flattenToString()
         LauncherAppState.getInstance(context).model.modelDbController.query(
             Favorites.TABLE_NAME, arrayOf(Favorites._ID),
-            "${Favorites.APPWIDGET_PROVIDER} = ?", arrayOf(CozyBoardWidget.component().flattenToString()), null,
+            "${Favorites.APPWIDGET_PROVIDER} = ? OR ${Favorites.APPWIDGET_PROVIDER} = ?",
+            arrayOf(cozy, mika), null,
         ).use { it.count > 0 }
     }.getOrDefault(false)
 
@@ -64,7 +69,13 @@ object CyberLayout {
     @JvmStatic
     fun onDefaultLayoutLoaded(context: Context, db: ModelDbController) {
         val idp = InvariantDeviceProfile.INSTANCE.get(context)
-        val provider = CozyBoardWidget.component()
+        val isMika = context.getSharedPreferences("mika_theme_prefs", Context.MODE_PRIVATE)
+            .getBoolean("mika_active", false)
+        val provider = if (isMika) {
+            ComponentName("android", CLS_CUSTOM_WIDGET_PREFIX + "com.techvrs.cyberhome.mika.board.MikaBoardWidget")
+        } else {
+            CozyBoardWidget.component()
+        }
         val widgetId = CustomWidgetManager.INSTANCE.get(context).allocateCustomAppWidgetId(provider)
         val values = ContentValues().apply {
             put(Favorites._ID, db.generateNewItemId())
@@ -79,6 +90,6 @@ object CyberLayout {
             put(Favorites.APPWIDGET_PROVIDER, provider.flattenToString())
             put(Favorites.RESTORED, 0)
         }
-        if (db.insert(Favorites.TABLE_NAME, values) < 0) Log.w(TAG, "Could not add the Cozy Board")
+        if (db.insert(Favorites.TABLE_NAME, values) < 0) Log.w(TAG, "Could not add the Board")
     }
 }

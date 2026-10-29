@@ -2,20 +2,19 @@
 package com.techvrs.cyberhome.mika.theme
 
 import android.app.WallpaperManager
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.WorkerThread
-import com.android.launcher3.InvariantDeviceProfile
+import app.lawnchair.hotseat.DisabledHotseat
+import app.lawnchair.hotseat.LawnchairHotseat
+import app.lawnchair.preferences2.PreferenceManager2
 import com.android.launcher3.LauncherAppState
-import com.android.launcher3.LauncherSettings.Favorites
 import com.android.launcher3.util.Executors.MAIN_EXECUTOR
-import com.android.launcher3.widget.custom.CustomWidgetManager
-import com.techvrs.cyberhome.cyber.board.CozyBoardWidget
+import com.patrykmichalik.opto.core.setBlocking
+import com.techvrs.cyberhome.cyber.board.CyberLayout
 import com.techvrs.cyberhome.cyber.board.CyberWallpaper
 import com.techvrs.cyberhome.cyber.theme.ThemeSnapshot
-import com.techvrs.cyberhome.mika.board.MikaBoardWidget
 
 /**
  * Controller to apply and switch the Mika Theme look:
@@ -62,102 +61,64 @@ object MikaLook {
 
     /**
      * Places the Mika Cozy Board on Screen 0 of the workspace.
-     * Captures an atomic snapshot of user favorites before removing conflicting Screen 0 items.
+     * Captures an atomic snapshot of user favorites before rebuilding Screen 0.
      */
     @WorkerThread
-    fun placeMikaBoard(context: Context): Boolean = runCatching {
+    fun placeMikaBoard(context: Context, wallpaperRes: Int? = null): Boolean = runCatching {
         val app = context.applicationContext
-        val db = LauncherAppState.getInstance(app).model.modelDbController
-        val idp = InvariantDeviceProfile.INSTANCE.get(app)
-        val provider = MikaBoardWidget.component()
-        val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
 
         // 0. Safety Snapshot: Save screen 0 and hotseat before touching anything
         ThemeSnapshot.createSnapshot(app)
 
-        // Activate Mika full icon theme and apply home & lockscreen wallpapers
+        // Activate Mika full icon theme
         MikaStore.setMikaActive(app, true)
         MikaIconTransformer.clearCache()
-        applyWallpaper(app)
 
-        // 1. Clear items occupying Screen 0 of Desktop
-        db.delete(
-            Favorites.TABLE_NAME,
-            "${Favorites.CONTAINER} = ${Favorites.CONTAINER_DESKTOP} AND ${Favorites.SCREEN} = 0",
-            null,
-        )
+        // Apply wallpapers if specified
+        if (wallpaperRes != null) {
+            applyWallpaper(app, wallpaperRes)
+        }
 
-        // 2. Insert Mika Board covering Screen 0
-        val values = ContentValues().apply {
-            put(Favorites._ID, db.generateNewItemId())
-            put(Favorites.CONTAINER, Favorites.CONTAINER_DESKTOP)
-            put(Favorites.SCREEN, 0)
-            put(Favorites.CELLX, 0)
-            put(Favorites.CELLY, 0)
-            put(Favorites.SPANX, idp.numColumns)
-            put(Favorites.SPANY, idp.numRows)
-            put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_CUSTOM_APPWIDGET)
-            put(Favorites.APPWIDGET_ID, widgetId)
-            put(Favorites.APPWIDGET_PROVIDER, provider.flattenToString())
-            put(Favorites.RESTORED, 0)
+        // Request clean workspace reset so CyberLayout.onDefaultLayoutLoaded inserts MikaBoard
+        CyberLayout.requestReset(app)
+
+        MAIN_EXECUTOR.execute {
+            // Hide system hotseat and bottom search bar on main thread (triggers activity.recreate)
+            val prefs2 = PreferenceManager2.getInstance(app)
+            prefs2.isHotseatEnabled.setBlocking(false)
+            prefs2.hotseatMode.setBlocking(DisabledHotseat)
+
+            LauncherAppState.getInstance(app).model.forceReload()
+            LauncherAppState.getInstance(app).reloadIcons()
         }
-        val inserted = db.insert(Favorites.TABLE_NAME, values) >= 0
-        if (inserted) {
-            MAIN_EXECUTOR.execute {
-                LauncherAppState.getInstance(app).model.forceReload()
-                LauncherAppState.getInstance(app).reloadIcons()
-            }
-            Log.i(TAG, "Mika board placed on workspace.")
-        }
-        inserted
+        Log.i(TAG, "Mika board reset requested and model reload dispatched.")
+        true
     }.onFailure { Log.w(TAG, "Failed to place Mika board", it) }.getOrDefault(false)
 
-    /** Reverts the home screen back to the CyberHome Cozy Board and restores user snapshot */
+    /** Reverts the home screen back to the CyberHome Cozy Board */
     @WorkerThread
     fun placeCyberBoard(context: Context): Boolean = runCatching {
         val app = context.applicationContext
-        val db = LauncherAppState.getInstance(app).model.modelDbController
-        val idp = InvariantDeviceProfile.INSTANCE.get(app)
-        val provider = CozyBoardWidget.component()
-        val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
 
         // Deactivate Mika full icon theme
         MikaStore.setMikaActive(app, false)
         MikaIconTransformer.clearCache()
 
-        // 1. Try to restore previous user snapshot (including hotseat and desktop items)
-        val restoredFromSnapshot = ThemeSnapshot.restoreLatestSnapshot(app)
-
-        if (!restoredFromSnapshot) {
-            // Fallback: Clear screen 0 and place CozyBoard
-            db.delete(
-                Favorites.TABLE_NAME,
-                "${Favorites.CONTAINER} = ${Favorites.CONTAINER_DESKTOP} AND ${Favorites.SCREEN} = 0",
-                null,
-            )
-
-            val values = ContentValues().apply {
-                put(Favorites._ID, db.generateNewItemId())
-                put(Favorites.CONTAINER, Favorites.CONTAINER_DESKTOP)
-                put(Favorites.SCREEN, 0)
-                put(Favorites.CELLX, 0)
-                put(Favorites.CELLY, 0)
-                put(Favorites.SPANX, idp.numColumns)
-                put(Favorites.SPANY, idp.numRows)
-                put(Favorites.ITEM_TYPE, Favorites.ITEM_TYPE_CUSTOM_APPWIDGET)
-                put(Favorites.APPWIDGET_ID, widgetId)
-                put(Favorites.APPWIDGET_PROVIDER, provider.flattenToString())
-                put(Favorites.RESTORED, 0)
-            }
-            db.insert(Favorites.TABLE_NAME, values)
-        }
+        // Request layout reset so onDefaultLayoutLoaded rebuilds with CozyBoard
+        CyberLayout.requestReset(app)
 
         CyberWallpaper.apply(context)
+
         MAIN_EXECUTOR.execute {
+            // Restore system hotseat and bottom search bar on main thread (triggers activity.recreate)
+            val prefs2 = PreferenceManager2.getInstance(app)
+            prefs2.isHotseatEnabled.setBlocking(true)
+            prefs2.hotseatMode.setBlocking(LawnchairHotseat)
+
             LauncherAppState.getInstance(app).model.forceReload()
             LauncherAppState.getInstance(app).reloadIcons()
         }
-        Log.i(TAG, "CyberHome board restored (snapshot restored: $restoredFromSnapshot).")
+        Log.i(TAG, "CyberHome board restored.")
         true
     }.onFailure { Log.w(TAG, "Failed to restore Cyber board", it) }.getOrDefault(false)
 }

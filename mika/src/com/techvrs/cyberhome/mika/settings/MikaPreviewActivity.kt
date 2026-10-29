@@ -247,8 +247,7 @@ private fun MikaCustomizerScreen(onFinish: () -> Unit) {
                 MikaStore.setQuoteText(context, quoteText)
 
                 withContext(Dispatchers.IO) {
-                    MikaLook.applyWallpaper(context, MikaStore.WALLPAPERS[selectedWallpaper].resId)
-                    MikaLook.placeMikaBoard(context)
+                    MikaLook.placeMikaBoard(context, MikaStore.WALLPAPERS[selectedWallpaper].resId)
                 }
                 Toast.makeText(context, context.getString(R.string.mika_applied_toast), Toast.LENGTH_SHORT).show()
 
