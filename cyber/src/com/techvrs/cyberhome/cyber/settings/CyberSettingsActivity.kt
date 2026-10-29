@@ -62,6 +62,28 @@ private fun CyberSettingsScreen() {
             context.startActivity(intent)
         }
         CyberRow(
+            "Mika Lock Screen",
+            "Configure live lockscreen, display name, and quote",
+            R.drawable.mika_ic_cat_face,
+            colorResource(R.color.cyber_accent_pink),
+            colorResource(R.color.cyber_tint_pink),
+        ) {
+            val intent = Intent().setClassName(context.packageName, "com.techvrs.cyberhome.mika.lock.MikaLockSettingsActivity")
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+        CyberRow(
+            "Control Center",
+            "Hardware flashlight, quick toggles, and sliders",
+            R.drawable.cyber_ic_settings,
+            colorResource(R.color.cyber_accent_blue),
+            colorResource(R.color.cyber_tint_blue),
+        ) {
+            val intent = Intent().setClassName(context.packageName, "com.techvrs.cyberhome.cyber.controlcenter.ControlCenterActivity")
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
+        CyberRow(
             stringResource(R.string.cyber_settings_reset),
             stringResource(R.string.cyber_settings_reset_desc),
             R.drawable.cyber_ic_settings,

@@ -11,11 +11,18 @@ import com.android.launcher3.R
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo
 import com.android.launcher3.widget.LauncherAppWidgetProviderInfo.CLS_CUSTOM_WIDGET_PREFIX
 import com.android.systemui.plugins.CustomWidgetPlugin
+import com.techvrs.cyberhome.cyber.lock.LockStateRepository
+import com.techvrs.cyberhome.mika.lock.MikaLockContentView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
- * The Mika Lockscreen / Clock & Music Widget:
- * Recreates the left screen from the reference image (chunky clock, cat face & paw doodle,
- * weather line, battery progress bar, and lofi music player).
+ * The Mika Lockscreen / Clock & Music Widget on Home Workspace:
+ * Recreates the live chunky clock, cat doodles, weather line, battery progress bar,
+ * and lofi music player using live MikaLockContentView.
  */
 @Keep
 class MikaLockScreenWidget(@Suppress("UNUSED_PARAMETER") context: Context) : CustomWidgetPlugin {
@@ -23,7 +30,18 @@ class MikaLockScreenWidget(@Suppress("UNUSED_PARAMETER") context: Context) : Cus
     override fun onViewCreated(parent: AppWidgetHostView) {
         parent.removeAllViews()
         parent.contentDescription = parent.context.getString(R.string.mika_lock_label)
-        parent.addView(MikaLockScreenView(parent.context), MATCH_PARENT, MATCH_PARENT)
+
+        val contentView = MikaLockContentView(parent.context)
+        val stateRepo = LockStateRepository(parent.context).apply { start() }
+
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        scope.launch {
+            stateRepo.state.collectLatest { state ->
+                contentView.updateState(state)
+            }
+        }
+
+        parent.addView(contentView, MATCH_PARENT, MATCH_PARENT)
     }
 
     override fun updateWidgetInfo(info: AppWidgetProviderInfo, context: Context) {

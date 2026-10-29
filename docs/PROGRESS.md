@@ -368,3 +368,52 @@ Tested and verified on Nokia G10 (Android 13) on both Debug and Release APKs:
 - **Investigation:** Analyzed `ActivityAllAppsContainerView`, `all_apps_content.xml`, and `AllAppsRecyclerView`.
 - **Implementation Path:** Can be added as a pinned bottom overlay (`layout_gravity="bottom"`) or decorative footer inside `all_apps_content.xml` with bottom padding on `AllAppsRecyclerView` so that scrolling apps never obscure the art when reaching the end of the drawer. Ready to implement once the owner provides the isolated transparent artwork or selects built-in assets.
 
+## Mika Lock, Control Center & Cyber Architecture Implementation (2026-10-29)
+
+Comprehensive implementation of all 12 architecture and design specifications from `New folder/`:
+
+### 1. Safety & Revert Engine (`03-permissions-and-security.md`, `11-migration-and-revert.md`)
+- **ThemeSnapshot (`ThemeSnapshot.kt`):**
+  - Atomic JSON snapshots of Screen 0 and Hotseat favorites written to `filesDir/theme_backups/`.
+  - Maintains rolling history of last 3 snapshots.
+  - Automatically captures snapshot before applying Mika or Cyber themes, and restores layout on revert.
+- **Manifest & Security Hardening:**
+  - Removed dangerous permissions `CALL_PHONE` and `READ_EXTERNAL_STORAGE` via `tools:node="remove"`.
+  - Locked down `MikaPreviewActivity` (`android:exported="false"`), removed `APPLICATION_PREFERENCES` filter.
+  - Added strict `cyber_network_security_config.xml` (cleartext traffic disabled, pins `api.open-meteo.com`).
+  - Added safe image validation in `CyberPack.kt` (4096px / 40 MP bounds check, magic-byte MIME sniffing).
+
+### 2. Performance & Diet (`08-performance-and-diet.md`)
+- **3D Asset Optimization:** Resized 4 uncompressed 1024x1024 PNG icons (`mika_ic_*_3d.png`) to 256x256, reducing total asset size from 1.7 MB down to 175 KB (well below the 200 KB target).
+- **Allocations in `onDraw`:** Cleaned up object allocations in `MikaBoardView.kt` and designed `MikaLockContentView.kt` with reusable Paint and RectF objects for smooth 60/120 fps rendering.
+
+### 3. Unified CyberTheme System (`04-theme-system.md`)
+- **CyberThemeSpec (`CyberThemeSpec.kt`):** Immutable data models describing theme colors, typography, shapes, motions, and system bar specs for both Cyber and Mika looks.
+- **ThemeRepository (`ThemeRepository.kt`):** Reactive `StateFlow<CyberThemeSpec>` backed by SharedPreferences.
+- **SystemBarStyler (`SystemBarStyler.kt`):** Edge-to-edge window insets controller for status/nav bar icon appearance.
+- **SystemPaletteController (`SystemPaletteController.kt`):** Dynamic Monet palette generator and ADB-delegated system accent controller.
+- **ThemeApplier (`ThemeApplier.kt`):** Safe asynchronous theme application pipeline with rollback protection.
+
+### 4. Control Center (`05-control-center.md`)
+- **Activity (`ControlCenterActivity.kt`):**
+  - Hardware flashlight toggle using `CameraManager.setTorchMode`.
+  - Connectivity panels: Wi-Fi, Bluetooth, Mobile Data shortcuts.
+  - Live audio volume slider with `AudioManager`.
+  - Media playback controls (play/pause/prev/next) connected to `MediaSessionTracker`.
+  - System notification shade expander shortcut.
+
+### 5. Mika Lock Engine & Live Screen (`07-mika-lockscreen-spec.md`)
+- **Non-Negotiable Keyguard Delegation:** Never bypasses system lock or PIN. All unlocks cleanly delegate to `KeyguardManager.requestDismissKeyguard`.
+- **LockState & Repository (`LockState.kt`, `LockStateRepository.kt`):** Reactive StateFlow aggregating battery, time, weather (via `WeatherStore`), and media sessions (via `MediaSessionTracker`).
+- **MikaLockContentView (`MikaLockContentView.kt`):** Custom high-performance canvas view rendering live header doodles (butterflies, stars), live block clock, battery status, weather badge, customizable quote, and media playback card.
+- **MikaLockRenderer (`MikaLockRenderer.kt`):** Layer composition, upward swipe gesture tracking to dismiss overlay and reveal system PIN bouncer, emergency call dialer button.
+- **LockOverlayController (`LockOverlayController.kt`):** Listens for screen on/off events to preload lock overlay when device is not in an active call.
+- **LockHostActivity (`LockHostActivity.kt`):** Dedicated secure lockscreen activity (`showWhenLocked="true"`, `FLAG_SECURE`).
+- **MikaLockSettingsActivity (`MikaLockSettingsActivity.kt`):** User configuration for lock display name, quote, and toggles.
+- **Vector Drawables:** Vector doodles created for butterfly, music notes, weather rain, and media playback controls.
+
+### 6. Verification & Build
+- Kotlin compilation: `compileLawnWithQuickstepGithubDebugSources` PASSED with 0 errors.
+- Package build: `assembleLawnWithQuickstepGithubDebug` PASSED with 0 errors.
+- Output APK: `build/outputs/apk/lawnWithQuickstepGithub/debug/CyberHome.0.2.0.github.debug.apk` (41.1 MB).
+

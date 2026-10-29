@@ -54,6 +54,9 @@ class MikaBoardView(context: Context) : View(context) {
     private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private val bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val path = Path()
+    private val tempRect = RectF()
+    private val tempRect2 = RectF()
+    private val tempRect3 = RectF()
 
     // Fonts
     private val fontBold = MikaTheme.getFontBold(context)
@@ -737,13 +740,16 @@ class MikaBoardView(context: Context) : View(context) {
         val cy = r.centerY()
 
         strokePaint.strokeWidth = 2.4f * dp
-        canvas.drawArc(RectF(cx - 13f * dp, cy - 10f * dp, cx + 13f * dp, cy + 10f * dp), -145f, 110f, false, strokePaint)
+        tempRect.set(cx - 13f * dp, cy - 10f * dp, cx + 13f * dp, cy + 10f * dp)
+        canvas.drawArc(tempRect, -145f, 110f, false, strokePaint)
 
         strokePaint.strokeWidth = 2.0f * dp
-        canvas.drawArc(RectF(cx - 10f * dp, cy - 6f * dp, cx + 10f * dp, cy + 6f * dp), -145f, 110f, false, strokePaint)
+        tempRect.set(cx - 10f * dp, cy - 6f * dp, cx + 10f * dp, cy + 6f * dp)
+        canvas.drawArc(tempRect, -145f, 110f, false, strokePaint)
 
         strokePaint.strokeWidth = 1.6f * dp
-        canvas.drawArc(RectF(cx - 7f * dp, cy - 2f * dp, cx + 7f * dp, cy + 2f * dp), -145f, 110f, false, strokePaint)
+        tempRect.set(cx - 7f * dp, cy - 2f * dp, cx + 7f * dp, cy + 2f * dp)
+        canvas.drawArc(tempRect, -145f, 110f, false, strokePaint)
     }
 
     private fun drawFloFeatherVector(canvas: Canvas, r: RectF) {

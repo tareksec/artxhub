@@ -170,10 +170,36 @@ object CyberPack {
                     check(size <= MAX_ENTRY_BYTES && total <= MAX_TOTAL_BYTES) { "pack too large" }
                     buffer.write(chunk, 0, n)
                 }
-                out[name] = buffer.toByteArray()
+                val isImage = name.endsWith(".png", true) || name.endsWith(".jpg", true) ||
+                        name.endsWith(".jpeg", true) || name.endsWith(".webp", true)
+                val bytes = buffer.toByteArray()
+                if (isImage && !isSafeImage(bytes)) {
+                    Log.w(TAG, "Rejected unsafe or corrupted image entry: $name")
+                    continue
+                }
+                out[name] = bytes
             }
         }
         return out
+    }
+
+    private fun isSafeImage(bytes: ByteArray): Boolean {
+        if (bytes.size < 12) return false
+        val isPng = bytes[0] == 0x89.toByte() && bytes[1] == 0x50.toByte() && bytes[2] == 0x4E.toByte() && bytes[3] == 0x47.toByte()
+        val isJpeg = bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() && bytes[2] == 0xFF.toByte()
+        val isWebp = bytes[0] == 'R'.code.toByte() && bytes[1] == 'I'.code.toByte() && bytes[2] == 'F'.code.toByte() && bytes[3] == 'F'.code.toByte() &&
+                bytes[8] == 'W'.code.toByte() && bytes[9] == 'E'.code.toByte() && bytes[10] == 'B'.code.toByte() && bytes[11] == 'P'.code.toByte()
+
+        if (!isPng && !isJpeg && !isWebp) return false
+
+        val opts = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+        val w = opts.outWidth
+        val h = opts.outHeight
+        if (w <= 0 || h <= 0 || w > 4096 || h > 4096 || (w.toLong() * h.toLong() > 40_000_000L)) {
+            return false
+        }
+        return true
     }
 
     /** Typed dump: {"key": {"t": "s|b|i|l|f|set", "v": value}}. */

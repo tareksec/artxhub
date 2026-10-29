@@ -8,8 +8,8 @@ android {
         sourceSet.java.srcDirs += 'mika/src'
     }
 
-    // Merge Mika components via the 'withQuickstep' product flavor sourceSet
-    sourceSets.maybeCreate('withQuickstep').with {
+    // Merge Mika components via the 'lawn' product flavor sourceSet (dimension 'app')
+    sourceSets.maybeCreate('lawn').with {
         manifest.srcFile 'mika/AndroidManifest.xml'
     }
 }

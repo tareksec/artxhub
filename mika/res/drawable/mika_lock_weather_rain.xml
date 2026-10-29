@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- Cloud -->
+    <path
+        android:fillColor="#D8BAA9"
+        android:pathData="M6,12 C4.5,12 3,10.8 3,9 C3,7.5 4.2,6.2 5.8,6 C6.4,4 8.2,2.5 10.5,2.5 C13.2,2.5 15.3,4.4 15.8,7 C16.2,7 16.5,7 17,7 C18.7,7 20,8.3 20,10 C20,11.7 18.7,13 17,13 L6,13 Z" />
+    <!-- Rain drops -->
+    <path
+        android:strokeColor="#6B4C43"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M6,15 L5,18 M11,15 L10,18 M16,15 L15,18" />
+</vector>

@@ -3,6 +3,7 @@ package com.techvrs.cyberhome.cyber.widgets.music
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
@@ -13,10 +14,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.techvrs.cyberhome.cyber.widgets.CyberWidgets
 
 /**
- * Optional track info for the music strip. Works only after the user has granted notification
- * access to the launcher's existing NotificationListener (the same access Launcher3 uses for
- * notification dots), which MediaSessionManager.getActiveSessions() requires. Without it the
- * strip still works: buttons send media keys, play state comes from AudioManager.
+ * Track info and controls for the music strip and Mika lockscreen music card.
+ * Uses MediaSessionManager.getActiveSessions() when notification access is granted.
  */
 object MediaSessionTracker {
     private const val LISTENER = "com.android.launcher3.notification.NotificationListener"
@@ -28,6 +27,18 @@ object MediaSessionTracker {
         private set
 
     @Volatile var playing: Boolean = false
+        private set
+
+    @Volatile var albumArt: Bitmap? = null
+        private set
+
+    @Volatile var packageName: String? = null
+        private set
+
+    @Volatile var positionMs: Long = 0L
+        private set
+
+    @Volatile var durationMs: Long = 0L
         private set
 
     @Volatile var attached = false
@@ -79,7 +90,34 @@ object MediaSessionTracker {
         val metadata = c?.metadata
         title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
         artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        albumArt = metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+            ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+        durationMs = metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L
+        positionMs = c?.playbackState?.position ?: 0L
         playing = c?.playbackState?.state == PlaybackState.STATE_PLAYING
+        packageName = c?.packageName
+
         appContext?.let { CyberWidgets.refresh(it, MusicStripWidgetProvider::class.java) }
+    }
+
+    fun getController(): MediaController? = controller
+
+    fun skipToPrevious() {
+        runCatching { controller?.transportControls?.skipToPrevious() }
+    }
+
+    fun togglePlayPause() {
+        runCatching {
+            val c = controller ?: return
+            if (playing) {
+                c.transportControls.pause()
+            } else {
+                c.transportControls.play()
+            }
+        }
+    }
+
+    fun skipToNext() {
+        runCatching { controller?.transportControls?.skipToNext() }
     }
 }

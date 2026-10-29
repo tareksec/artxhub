@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- SPDX-License-Identifier: GPL-3.0-or-later -->
 <!-- Mika Theme components, merged into the application -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="com.kieronquinn.app.smartspacer.sdk, com.kieronquinn.app.smartspacer.sdk.client" />
+
     <application>
         <activity
             android:name="com.techvrs.cyberhome.mika.settings.MikaPreviewActivity"
             android:exported="true"
             android:label="@string/mika_theme_name"
             android:taskAffinity="${applicationId}.mika"
-            android:theme="@style/Mika.Theme.Screen">
-            <intent-filter>
-                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Mika.Theme.Screen" />
+
+        <activity
+            android:name="com.techvrs.cyberhome.mika.lock.MikaLockSettingsActivity"
+            android:exported="false"
+            android:label="Mika Lock Settings"
+            android:taskAffinity="${applicationId}.mika"
+            android:theme="@style/Mika.Theme.Screen" />
+
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.lock.LockHostActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity="${applicationId}.lock"
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false"
+            android:theme="@style/Cyber.Theme.Screen" />
+
+        <activity
+            android:name="com.techvrs.cyberhome.cyber.controlcenter.ControlCenterActivity"
+            android:exported="false"
+            android:theme="@style/Cyber.Theme.Screen" />
     </application>
 </manifest>

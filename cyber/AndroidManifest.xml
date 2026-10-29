@@ -3,8 +3,15 @@
 <!-- CyberHome components, merged into every build type.
      No new permissions: INTERNET (weather), SET_WALLPAPER, POST_NOTIFICATIONS and
      BIND_APPWIDGET are already declared by the launcher; see docs/PERMISSIONS.md. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Hardened Permissions Audit per 03-security-hardening.md -->
+    <uses-permission android:name="android.permission.CALL_PHONE" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+
+    <application
+        android:networkSecurityConfig="@xml/cyber_network_security_config">
 
         <!-- Starts runtime receivers (date, battery, media) in the launcher process -->
         <provider

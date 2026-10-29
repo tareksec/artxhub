@@ -20,6 +20,8 @@ import com.android.launcher3.util.Executors.THREAD_POOL_EXECUTOR
 import com.techvrs.cyberhome.cyber.design.CyberLauncherStyle
 import com.techvrs.cyberhome.cyber.design.CyberThemeMode
 import com.techvrs.cyberhome.cyber.board.CyberWallpaper
+import com.techvrs.cyberhome.cyber.lock.LockOverlayController
+import com.techvrs.cyberhome.cyber.theme.ThemeRepository
 import com.techvrs.cyberhome.cyber.widgets.CyberWidgets
 import com.techvrs.cyberhome.cyber.widgets.battery.BatteryStripWidgetProvider
 import com.techvrs.cyberhome.cyber.widgets.calendar.MonthCalendarWidgetProvider
@@ -41,6 +43,10 @@ object CyberRuntime {
         if (started) return
         started = true
         val app = context.applicationContext
+
+        // Initialize Theme Engine and Lock Screen Controller
+        ThemeRepository.init(app)
+        LockOverlayController.start(app)
 
         val dateReceiver = object : BroadcastReceiver() {
             override fun onReceive(c: Context, intent: Intent) {

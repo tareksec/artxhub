@@ -24,9 +24,16 @@ an optional feature.
   (settings "live information"/announcements download, GitHub-based About screen, web search
   suggestions in the app drawer); see `UPSTREAM_CHANGES.md`.
 
-## Inherited from Lawnchair (unchanged)
+## Hardened Security Audit & Removals (Task A2)
 
-Lawnchair declares more permissions for its own optional features (e.g. `QUERY_ALL_PACKAGES` for the
-app drawer, `READ_CONTACTS`/`READ_MEDIA_*` for drawer search, `PACKAGE_USAGE_STATS`, accessibility
-service for gestures). They are only used when the user enables those Lawnchair features. Removing
-them would break Lawnchair features, so they are left as they are.
+The following permissions inherited from upstream were audited and explicitly removed via `tools:node="remove"`:
+- `android.permission.CALL_PHONE` (Removed: dialing is handled safely via `Intent.ACTION_DIAL`)
+- `android.permission.READ_EXTERNAL_STORAGE` (Removed: image selection uses system Photo Picker)
+
+## Additional Features & Permissions
+
+| Permission | Declared by | Used for | When asked |
+|---|---|---|---|
+| Camera / Flashlight | System | Hardware flashlight toggle in CyberHome Control Center | Normal feature, no dangerous camera permission required for torch mode |
+| `WRITE_SECURE_SETTINGS` | Optional | Material You system palette customization (ADB mode) | Never requested at runtime; granted once by user via PC `adb shell pm grant` |
+| `KeyguardManager.requestDismissKeyguard` | System API | Mika Lock screen unlocking flow | Authenticates via system PIN/fingerprint |

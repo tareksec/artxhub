@@ -223,6 +223,16 @@ private fun MikaCustomizerScreen(onFinish: () -> Unit) {
 
         Spacer(modifier = Modifier.height(14.dp))
 
+        CyberButton(
+            text = "Mika Lock Screen Settings",
+            accent = Color(0xFFFBE6D8),
+            enabled = !isApplying,
+        ) {
+            context.startActivity(Intent(context, com.techvrs.cyberhome.mika.lock.MikaLockSettingsActivity::class.java))
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         // 4. Action Buttons
         CyberButton(
             text = if (isApplying) "Applying Theme..." else stringResource(R.string.mika_apply_theme),

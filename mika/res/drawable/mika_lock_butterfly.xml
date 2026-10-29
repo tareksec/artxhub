@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- Butterfly wings -->
+    <path
+        android:fillColor="#F4A3B4"
+        android:pathData="M10,8 C8,3 3,3 2,7 C1,11 6,13 10,10 Z" />
+    <path
+        android:fillColor="#F4A3B4"
+        android:pathData="M10,8 C12,3 17,3 18,7 C19,11 14,13 10,10 Z" />
+    <path
+        android:fillColor="#FFD7DE"
+        android:pathData="M10,10 C7,12 4,15 5,18 C6,20 10,16 10,12 Z" />
+    <path
+        android:fillColor="#FFD7DE"
+        android:pathData="M10,10 C13,12 16,15 15,18 C14,20 10,16 10,12 Z" />
+    <!-- Body -->
+    <path
+        android:strokeColor="#6B4C43"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:pathData="M10,5 L10,16" />
+</vector>
