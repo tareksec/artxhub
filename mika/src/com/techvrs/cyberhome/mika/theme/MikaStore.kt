@@ -13,6 +13,14 @@ object MikaStore {
     private const val KEY_WALLPAPER = "wallpaper_index"
     private const val KEY_CHARACTER = "character_index"
     private const val KEY_QUOTE = "quote_text"
+    private const val KEY_ACTIVE = "mika_active"
+
+    fun isMikaActive(context: Context): Boolean =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_ACTIVE, false)
+
+    fun setMikaActive(context: Context, active: Boolean) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit { putBoolean(KEY_ACTIVE, active) }
+    }
 
     data class WallpaperItem(val title: String, val resId: Int)
     data class CharacterItem(val title: String, val resId: Int)

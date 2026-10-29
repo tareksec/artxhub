@@ -24,12 +24,15 @@ import com.techvrs.cyberhome.mika.board.MikaBoardWidget
 object MikaLook {
     private const val TAG = "MikaLook"
 
-    /** Applies the currently selected Mika wallpaper to the home screen */
+    /** Applies the currently selected Mika wallpaper to the home screen and lockscreen */
     @WorkerThread
     fun applyWallpaper(context: Context, wallpaperRes: Int = MikaStore.getWallpaperRes(context)): Boolean = runCatching {
         val wm = WallpaperManager.getInstance(context)
+        // 1. Set System Home Screen Wallpaper
         wm.setResource(wallpaperRes, WallpaperManager.FLAG_SYSTEM)
-        Log.i(TAG, "Mika wallpaper ($wallpaperRes) applied successfully.")
+        // 2. Set System Lock Screen Wallpaper to the exact Mika Lockscreen artwork
+        wm.setResource(com.android.launcher3.R.drawable.mika_lockscreen_art, WallpaperManager.FLAG_LOCK)
+        Log.i(TAG, "Mika home and lockscreen wallpapers applied successfully.")
         true
     }.onFailure { Log.w(TAG, "Failed to apply Mika wallpaper", it) }.getOrDefault(false)
 
@@ -44,6 +47,10 @@ object MikaLook {
         val idp = InvariantDeviceProfile.INSTANCE.get(app)
         val provider = MikaBoardWidget.component()
         val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
+
+        // Activate Mika full icon theme
+        MikaStore.setMikaActive(app, true)
+        MikaIconTransformer.clearCache()
 
         // 1. Clear any conflicting items currently occupying Screen 0 of Desktop and Hotseat
         db.delete(
@@ -75,6 +82,7 @@ object MikaLook {
         if (inserted) {
             MAIN_EXECUTOR.execute {
                 LauncherAppState.getInstance(app).model.forceReload()
+                LauncherAppState.getInstance(app).reloadIcons()
             }
             Log.i(TAG, "Mika board placed on workspace.")
         }
@@ -89,6 +97,10 @@ object MikaLook {
         val idp = InvariantDeviceProfile.INSTANCE.get(app)
         val provider = CozyBoardWidget.component()
         val widgetId = CustomWidgetManager.INSTANCE.get(app).allocateCustomAppWidgetId(provider)
+
+        // Deactivate Mika full icon theme
+        MikaStore.setMikaActive(app, false)
+        MikaIconTransformer.clearCache()
 
         db.delete(
             Favorites.TABLE_NAME,
@@ -114,6 +126,7 @@ object MikaLook {
             CyberWallpaper.apply(context)
             MAIN_EXECUTOR.execute {
                 LauncherAppState.getInstance(app).model.forceReload()
+                LauncherAppState.getInstance(app).reloadIcons()
             }
             Log.i(TAG, "CyberHome board restored.")
         }

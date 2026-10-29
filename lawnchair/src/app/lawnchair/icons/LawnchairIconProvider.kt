@@ -161,11 +161,21 @@ class LawnchairIconProvider @JvmOverloads constructor(
         }
         val icon = resolvedEntry?.let { iconPackProvider.getDrawable(it, iconDpi, user) }
         val td = themeData
-        if (icon != null) return if (td != null) td.wrapDrawable(icon, iconType) else icon
+        if (icon != null) {
+            val raw = if (td != null) td.wrapDrawable(icon, iconType) else icon
+            if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) {
+                return com.techvrs.cyberhome.mika.theme.MikaIconTransformer.transform(context, packageName, raw)
+            }
+            return raw
+        }
 
         // use default icon from system
         var defaultIcon =
             super.getIconWithOverrides(packageName, component, user, iconDpi, fallback)
+
+        if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) {
+            return com.techvrs.cyberhome.mika.theme.MikaIconTransformer.transform(context, packageName, defaultIcon)
+        }
 
         if ((context.shouldTintIconPackBackgrounds() && defaultIcon is AdaptiveIconDrawable)) {
             if (Utilities.ATLEAST_T && defaultIcon.monochrome != null) {
@@ -231,7 +241,8 @@ class LawnchairIconProvider @JvmOverloads constructor(
     }
 
     override fun getSystemIconState(): String {
-        return super.getSystemIconState() + ",pack:${iconPackPref.get()}/${themedIconPackPref.get()},ver:$iconPackVersion"
+        val mika = if (com.techvrs.cyberhome.mika.theme.MikaStore.isMikaActive(context)) "mika:1" else "mika:0"
+        return super.getSystemIconState() + ",pack:${iconPackPref.get()}/${themedIconPackPref.get()},ver:$iconPackVersion,$mika"
     }
 
     override fun registerIconChangeListener(
